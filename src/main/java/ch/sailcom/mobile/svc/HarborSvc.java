@@ -3,7 +3,6 @@ package ch.sailcom.mobile.svc;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -15,9 +14,6 @@ import ch.sailcom.mobile.Harbor;
 import ch.sailcom.mobile.server.ServerSession;
 import ch.sailcom.mobile.server.impl.NoSessionException;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
 /**
  * Servlet implementation class HarborSvc
  */
@@ -25,21 +21,6 @@ import com.google.gson.GsonBuilder;
 public class HarborSvc extends HttpServlet {
 
 	private static final long serialVersionUID = 1L;
-	private static Gson gs = null;
-
-	/**
-	 * @see HttpServlet#HttpServlet()
-	 */
-	public HarborSvc() {
-		super();
-	}
-
-	/**
-	 * @see Servlet#init(ServletConfig)
-	 */
-	public void init(ServletConfig config) throws ServletException {
-		gs = new GsonBuilder().setPrettyPrinting().create();;
-	}
 
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
@@ -63,12 +44,12 @@ public class HarborSvc extends HttpServlet {
 
 			if (request.getPathInfo() == null) {
 				PrintWriter writer = response.getWriter();
-				writer.println(gs.toJson(serverSession.getHarbors()));
+				writer.println(SvcUtil.toJson(serverSession.getHarbors()));
 				writer.flush();
 				writer.close();
 			} else if (request.getPathInfo().equals("/my")) {
 				PrintWriter writer = response.getWriter();
-				writer.println(gs.toJson(serverSession.getMyHarbors()));
+				writer.println(SvcUtil.toJson(serverSession.getMyHarbors()));
 				writer.flush();
 				writer.close();
 			} else if (SvcUtil.isId(request.getPathInfo().substring(1))) {
@@ -76,7 +57,7 @@ public class HarborSvc extends HttpServlet {
 				Harbor h = serverSession.getHarbor(harborId);
 				if (h != null) {
 					PrintWriter writer = response.getWriter();
-					writer.println(gs.toJson(h));
+					writer.println(SvcUtil.toJson(h));
 					writer.flush();
 					writer.close();
 				} else {

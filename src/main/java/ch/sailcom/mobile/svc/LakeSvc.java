@@ -3,7 +3,6 @@ package ch.sailcom.mobile.svc;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -15,9 +14,6 @@ import ch.sailcom.mobile.Lake;
 import ch.sailcom.mobile.server.ServerSession;
 import ch.sailcom.mobile.server.impl.NoSessionException;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
 /**
  * Servlet implementation class LakeSvc
  */
@@ -25,21 +21,6 @@ import com.google.gson.GsonBuilder;
 public class LakeSvc extends HttpServlet {
 
 	private static final long serialVersionUID = 1L;
-	private static Gson gs = null;
-
-	/**
-	 * @see HttpServlet#HttpServlet()
-	 */
-	public LakeSvc() {
-		super();
-	}
-
-	/**
-	 * @see Servlet#init(ServletConfig)
-	 */
-	public void init(ServletConfig config) throws ServletException {
-		gs = new GsonBuilder().setPrettyPrinting().create();;
-	}
 
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
@@ -63,12 +44,12 @@ public class LakeSvc extends HttpServlet {
 
 			if (request.getPathInfo() == null) {
 				PrintWriter writer = response.getWriter();
-				writer.println(gs.toJson(serverSession.getLakes()));
+				writer.println(SvcUtil.toJson(serverSession.getLakes()));
 				writer.flush();
 				writer.close();
 			} else if (request.getPathInfo().equals("/my")) {
 				PrintWriter writer = response.getWriter();
-				writer.println(gs.toJson(serverSession.getMyLakes()));
+				writer.println(SvcUtil.toJson(serverSession.getMyLakes()));
 				writer.flush();
 				writer.close();
 			} else if (SvcUtil.isId(request.getPathInfo().substring(1))) {
@@ -76,7 +57,7 @@ public class LakeSvc extends HttpServlet {
 				Lake l = serverSession.getLake(lakeId);
 				if (l != null) {
 					PrintWriter writer = response.getWriter();
-					writer.println(gs.toJson(l));
+					writer.println(SvcUtil.toJson(l));
 					writer.flush();
 					writer.close();
 				} else {

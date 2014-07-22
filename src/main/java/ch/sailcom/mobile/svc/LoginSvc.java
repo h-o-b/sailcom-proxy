@@ -2,7 +2,6 @@ package ch.sailcom.mobile.svc;
 
 import java.io.IOException;
 
-import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -23,19 +22,6 @@ public class LoginSvc extends HttpServlet {
 
 	private static final String USER_NAME_PAR = "user";
 	private static final String PWD_PAR = "pwd";
-
-	/**
-	 * @see HttpServlet#HttpServlet()
-	 */
-	public LoginSvc() {
-		super();
-	}
-
-	/**
-	 * @see Servlet#init(ServletConfig)
-	 */
-	public void init(ServletConfig config) throws ServletException {
-	}
 
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)

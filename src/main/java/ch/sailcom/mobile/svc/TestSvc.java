@@ -2,9 +2,7 @@ package ch.sailcom.mobile.svc;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Enumeration;
 
-import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -20,19 +18,6 @@ public class TestSvc extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
 	/**
-	 * @see HttpServlet#HttpServlet()
-	 */
-	public TestSvc() {
-		super();
-	}
-
-	/**
-	 * @see Servlet#init(ServletConfig)
-	 */
-	public void init(ServletConfig config) throws ServletException {
-	}
-
-	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -44,11 +29,10 @@ public class TestSvc extends HttpServlet {
 		writer.println("<html>");
 		writer.println("<head><title>HTTP Test Page</title></head>");
 		writer.println("<body>");
-		writer.println("<h1>HTTP Test Page</h1>");
 
-		writer.println("<h2>SailCom Test Links</h2>");
+		writer.println("<h1>SailCom Test Links</h1>");
 
-		writer.println("<h3>Session Handling</h3>");
+		writer.println("<h2>Session Handling</h2>");
 		writer.println("<table>");
 		writer.println("  <tr>");
 		writer.println("    <td>General</td>");
@@ -69,7 +53,7 @@ public class TestSvc extends HttpServlet {
 		writer.println("</table>");
 
 		
-		writer.println("<h3>Static Data</h3>");
+		writer.println("<h2>Static Data</h2>");
 		writer.println("<table>");
 		writer.println("  <tr>");
 		writer.println("    <td>Lakes</td>");
@@ -89,7 +73,7 @@ public class TestSvc extends HttpServlet {
 		writer.println("  </tr>");
 		writer.println("</table>");
 
-		writer.println("<h3>Bookings</h3>");
+		writer.println("<h2>Bookings</h2>");
 		writer.println("<table>");
 		writer.println("  <tr>");
 		writer.println("    <td>Bookings</td>");
@@ -97,46 +81,6 @@ public class TestSvc extends HttpServlet {
 		writer.println("  </tr>");
 		writer.println("</table>");
 
-		writer.println("<h2>HTTP Request Parameters</h2>");
-		writer.println("<ul>");
-		writer.println("<li>encoding: " + request.getCharacterEncoding() + "</li>");
-		writer.println("<li>contentLength: " + request.getContentLength() + "</li>");
-		writer.println("<li>contentType: " + request.getContentType() + "</li>");
-		writer.println("<li>protocol: " + request.getProtocol() + "</li>");
-		writer.println("<li>addr: " + request.getLocalAddr() + "</li>");
-		writer.println("<li>name: " + request.getLocalName() + "</li>");
-		writer.println("<li>port: " + request.getLocalPort() + "</li>");
-		writer.println("<li>contextPath: " + request.getContextPath() + "</li>");
-		writer.println("<li>method: " + request.getMethod() + "</li>");
-		writer.println("<li>pathInfo: " + request.getPathInfo() + "</li>");
-		writer.println("<li>pathTranslated: " + request.getPathTranslated() + "</li>");
-		writer.println("<li>queryString: " + request.getQueryString() + "</li>");
-		writer.println("<li>remoteAddr: " + request.getRemoteAddr() + "</li>");
-		writer.println("<li>remoteHost: " + request.getRemoteHost() + "</li>");
-		writer.println("<li>remotePort: " + request.getRemotePort() + "</li>");
-		writer.println("<li>remoteUser: " + request.getRemoteUser() + "</li>");
-		writer.println("<li>requestedSessionId: " + request.getRequestedSessionId() + "</li>");
-		writer.println("<li>requestUri: " + request.getRequestURI() + "</li>");
-		writer.println("<li>requestUrl: " + request.getRequestURL().toString() + "</li>");
-		writer.println("<li>scheme: " + request.getScheme() + "</li>");
-		writer.println("<li>serverName: " + request.getServerName() + "</li>");
-		writer.println("<li>serverPort: " + request.getServerPort() + "</li>");
-		writer.println("<li>servletPath: " + request.getServletPath() + "</li>");
-		writer.println("<li>session: " + request.getSession() + "</li>");
-		Enumeration<String> attrs = request.getAttributeNames();
-		while (attrs.hasMoreElements()) {
-			String a = attrs.nextElement();
-			writer.println("<li>attribute: " + a + " = " + request.getAttribute(a) + "</li>");
-		}
-		Enumeration<String> pars = request.getParameterNames();
-		while (pars.hasMoreElements()) {
-			String p = pars.nextElement();
-			writer.println("<li>param: " + p + " = " + request.getParameter(p) + "</li>");
-		}
-		for (int i = 0; i < request.getCookies().length; i++) {
-			writer.println("<li>cookie: " + request.getCookies()[i].getDomain() + ", " + request.getCookies()[i].getPath() + ", " + request.getCookies()[i].getName() + ", " + request.getCookies()[i].getValue() + ", " + "</li>");
-		}
-		writer.println("</ul>");
 		writer.println("</body>");
 		writer.println("</html>");
 
