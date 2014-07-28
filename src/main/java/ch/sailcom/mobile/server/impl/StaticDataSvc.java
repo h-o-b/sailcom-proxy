@@ -78,7 +78,7 @@ public class StaticDataSvc {
 
 			c = cells.get(1);
 			s.id = Integer.parseInt(c.select("a").first().attr("href").split("=")[1]);
-			s.name = c.select("a").first().html();
+			s.name = c.select("a").first().text();
 			tn = c.textNodes();
 			s.nrPlate = tn.get(0).getWholeText();
 			s.type = tn.get(1).getWholeText();
@@ -93,7 +93,7 @@ public class StaticDataSvc {
 				l = sd.lakesById.get(h.lakeId);
 			} else {
 				/* Get/Init Lake */
-				String lakeName = tn.get(0).getWholeText();
+				String lakeName = tn.get(0).text();
 				l = lakeByName.get(lakeName);
 				if (l == null) {
 					l = new Lake();
@@ -106,7 +106,7 @@ public class StaticDataSvc {
 				/* Init Harbor */
 				h = new Harbor();
 				h.id = s.harborId;
-				h.name = c.select("a").first().html();
+				h.name = c.select("a").first().text();
 				h.lakeId = l.id;
 				sd.harborsById.put(h.id, h);
 				sd.harbors.add(h);
@@ -125,6 +125,8 @@ public class StaticDataSvc {
 
 			sd.ships.add(s);
 			sd.shipsById.put(s.id, s);
+			String fullName = s.name + "@" + h.name;
+			sd.shipsByName.put(fullName, s);
 		}
 
 		return sd;

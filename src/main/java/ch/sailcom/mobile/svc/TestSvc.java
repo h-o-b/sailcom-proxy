@@ -52,7 +52,6 @@ public class TestSvc extends HttpServlet {
 		writer.println("  </tr>");
 		writer.println("</table>");
 
-		
 		writer.println("<h2>Static Data</h2>");
 		writer.println("<table>");
 		writer.println("  <tr>");
@@ -70,6 +69,14 @@ public class TestSvc extends HttpServlet {
 		writer.println("  <tr>");
 		writer.println("    <td></td>");
 		writer.println("    <td></td>");
+		writer.println("  </tr>");
+		writer.println("</table>");
+
+		writer.println("<h2>Trips</h2>");
+		writer.println("<table>");
+		writer.println("  <tr>");
+		writer.println("    <td>Trips</td>");
+		writer.println("    <td><a href='trips'>My Trips</a></td>");
 		writer.println("  </tr>");
 		writer.println("</table>");
 

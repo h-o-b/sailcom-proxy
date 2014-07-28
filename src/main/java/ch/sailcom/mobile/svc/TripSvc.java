@@ -2,11 +2,6 @@ package ch.sailcom.mobile.svc;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -18,13 +13,12 @@ import ch.sailcom.mobile.server.ServerSession;
 import ch.sailcom.mobile.server.impl.NoSessionException;
 
 /**
- * Servlet implementation class BookSvc
+ * Servlet implementation class TripSvc
  */
-@WebServlet("/bookings")
-public class BookSvc extends HttpServlet {
+@WebServlet("/trips")
+public class TripSvc extends HttpServlet {
 
 	private static final long serialVersionUID = 1L;
-	private DateFormat df = new SimpleDateFormat("dd.MM.yyyy");
 
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
@@ -44,40 +38,10 @@ public class BookSvc extends HttpServlet {
 				serverSession.connect();
 			}
 
-			/* Validate Service Input */
-			if (request.getParameter("shipId") == null) {
-				response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-				return;
-			}
-
-			int shipId = Integer.parseInt(request.getParameter("shipId"));
-			if (serverSession.getShip(shipId) == null) {
-				response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-				return;
-			}
-
-			int nofWeeks = request.getParameter("nofWeeks") == null ? 1 : Integer.parseInt(request.getParameter("nofWeeks"));
-			Date currDate = null;
-			if (request.getParameter("date") != null) {
-				try {
-					currDate = df.parse(request.getParameter("date"));
-				} catch (ParseException e) {
-					e.printStackTrace();
-					throw new RuntimeException(e);
-				}
-			} else {
-			    Calendar cal = Calendar.getInstance();
-			    cal.set(Calendar.HOUR_OF_DAY, 0);
-			    cal.set(Calendar.MINUTE, 0);
-			    cal.set(Calendar.SECOND, 0);
-			    cal.set(Calendar.MILLISECOND, 0);
-			    currDate = cal.getTime();
-			}
-
 			response.setContentType("application/json");
 
 			PrintWriter writer = response.getWriter();
-			writer.println(SvcUtil.toJson(serverSession.getBookings(shipId, currDate, nofWeeks)));
+			writer.println(SvcUtil.toJson(serverSession.getTrips()));
 			writer.flush();
 			writer.close();
 

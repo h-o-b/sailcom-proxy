@@ -22,7 +22,7 @@ public class BookSvc {
 	private static final DateFormat df = new SimpleDateFormat("dd.MM.yyyy"); 
 	private static final DateFormat jdf = new SimpleDateFormat("yyyy-MM-dd"); 
 	private static final DateFormat tf = new SimpleDateFormat("dd.MM.yyyy HH:mm"); 
-	private static final DateFormat jtf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm"); 
+	private static final DateFormat jtf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'"); 
 
 	public static List<Booking> getBookings(ServerSession session, int shipId, Date fromDate, int nofWeeks) throws IOException, ParseException {
 
@@ -125,7 +125,7 @@ public class BookSvc {
 
 					Element a = booksA.get(b);
 					Element book = booksDiv.get(b);
-					int bookId = Integer.parseInt(book.id());
+					int tripId = Integer.parseInt(book.id());
 
 					Booking booking = new Booking();
 
@@ -134,12 +134,12 @@ public class BookSvc {
 					booking.lakeId = session.getHarbor(booking.harborId).lakeId;
 					booking.date = jdf.format(df.parse(bookDate));
 
-					booking.bookId = bookId;
+					booking.tripId = tripId;
 					Element bookTime = a.select("div#Res").first();
 
-					booking.timeFrom = bookTime.text().split("-")[0];
+					booking.timeFrom = bookTime.text().split("-")[0].trim();
 					booking.dateFrom = jtf.format(tf.parse(bookDate + " " + booking.timeFrom));
-					booking.timeTo = bookTime.text().split("-")[1];
+					booking.timeTo = bookTime.text().split("-")[1].trim();
 					booking.dateTo = jtf.format(tf.parse(bookDate + " " + booking.timeTo));
 
 					Element userInfo = book.select("table").first().select("tr").get(1).select("td").get(1);

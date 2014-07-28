@@ -1,6 +1,7 @@
 package ch.sailcom.mobile.svc;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -9,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import ch.sailcom.mobile.Session;
 import ch.sailcom.mobile.server.ServerSession;
 import ch.sailcom.mobile.server.impl.NoSessionException;
 
@@ -50,11 +52,18 @@ public class LoginSvc extends HttpServlet {
 				serverSession.connect();
 			}
 
-			serverSession.login(user, pwd);
-
-			if (!serverSession.isLoggedIn()) {
+			if (!serverSession.login(user, pwd)) {
 				response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 			}
+
+			Session s = new Session();
+			s.sessionId = serverSession.getSessionId();
+			s.user = serverSession.getUser();
+
+			PrintWriter writer = response.getWriter();
+			writer.println(SvcUtil.toJson(s));
+			writer.flush();
+			writer.close();
 
 		} catch (NoSessionException e) {
 

@@ -20,6 +20,7 @@ public class StaticData {
 	public List<Harbor> myHarbors = new ArrayList<Harbor>();
 
 	public Map<Integer, Ship> shipsById = new HashMap<Integer, Ship>();
+	public Map<String, Ship> shipsByName = new HashMap<String, Ship>();
 	public List<Ship> ships = new ArrayList<Ship>();
 	public List<Ship> myShips = new ArrayList<Ship>();
 
