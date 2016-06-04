@@ -7,6 +7,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -21,8 +23,6 @@ public class BookSvc {
 	private static final String BOOKING_BASE_URL = "https://www.sailcomnet.ch/net/plan.php?lng=de";
 	private static final DateFormat df = new SimpleDateFormat("dd.MM.yyyy"); 
 	private static final DateFormat jdf = new SimpleDateFormat("yyyy-MM-dd"); 
-	private static final DateFormat tf = new SimpleDateFormat("dd.MM.yyyy HH:mm"); 
-	private static final DateFormat jtf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'"); 
 
 	public static List<Booking> getBookings(ServerSession session, int shipId, Date fromDate, int nofWeeks) throws IOException, ParseException {
 
@@ -60,7 +60,7 @@ public class BookSvc {
 		 *
 		 *         <!-- PER BOOKING -->
 		 *         <a class='resdetail' href='#' onmouseover='this.style.cursor="pointer" ' onfocus='this.blur();' onclick="document.getElementById('83049').style.display = 'block' " >
-		 *           <div id='Res'  style='background-color: #FFC0C0'>10:00-<br>14:00</div>
+		 *           <div id='Res'  style='background-color: #FFC0C0'>10:00-<br>24:00</div>
 		 *         </a>
 		 *         <div class='res' id='83049' style='display: none; position: absolute; left: 50px; top: 50px;'>
 		 *           <div style='text-align: right' class='fenster'>
@@ -68,7 +68,7 @@ public class BookSvc {
 		 *           </div>
 		 *           <table cellspacing='0' cellpadding='5' border='0'>
 		 *             <tr>
-		 *               <td colspan='2' align='center'>Sa.&nbsp;07.06.2014 10:00&nbsp;h&nbsp;-&nbsp;Sa.&nbsp;07.06.2014 14:00&nbsp;h</td>
+		 *               <td colspan='2' align='center'>Sa.&nbsp;07.06.2014 10:00&nbsp;h&nbsp;-&nbsp;So.&nbsp;08.06.2014 14:00&nbsp;h<br>Reserviert am ...</td>
 		 *             </tr>
 		 *             <tr>
 		 *               <td valign='bottom'><img src='../fotos/mitglieder/11719.jpg' | src='/fotos/mitglieder/leer.jpg' border='1'></td>
@@ -132,15 +132,29 @@ public class BookSvc {
 					booking.shipId = shipId;
 					booking.harborId = session.getShip(booking.shipId).harborId;
 					booking.lakeId = session.getHarbor(booking.harborId).lakeId;
-					booking.date = jdf.format(df.parse(bookDate));
+
+					booking.bookDate = jdf.format(df.parse(bookDate));
+					Element bookTime = a.select("div#Res").first();
+					booking.bookTimeFrom = bookTime.text().split("-")[0].trim();
+					booking.bookTimeTo = bookTime.text().split("-")[1].trim();
 
 					booking.tripId = tripId;
-					Element bookTime = a.select("div#Res").first();
+					booking.isMine = bookTime.attr("style").contains("#80FF80");
 
-					booking.timeFrom = bookTime.text().split("-")[0].trim();
-					booking.dateFrom = jtf.format(tf.parse(bookDate + " " + booking.timeFrom));
-					booking.timeTo = bookTime.text().split("-")[1].trim();
-					booking.dateTo = jtf.format(tf.parse(bookDate + " " + booking.timeTo));
+					String tripInfo = book.select("table").first().select("tr").get(0).select("td").get(0).text();
+System.out.println("tripInfo: " + tripInfo);
+					Pattern p = Pattern.compile("[0-9][0-9]\\.[0-9][0-9]\\.[0-9][0-9][0-9][0-9] [0-9][0-9]:[0-9][0-9]");
+				    Matcher m = p.matcher(tripInfo);
+				    if (m.find()) { // from date
+System.out.println("tripDateFrom: " + m.group());
+						booking.tripDateFrom = jdf.format(df.parse(m.group().split(" ")[0]));
+						booking.tripTimeFrom = m.group().split(" ")[1];
+				    }
+				    if (m.find()) { // to date
+System.out.println("tripDateTo: " + m.group());
+						booking.tripDateTo = jdf.format(df.parse(m.group().split(" ")[0]));
+						booking.tripTimeTo = m.group().split(" ")[1];
+				    }
 
 					Element userInfo = book.select("table").first().select("tr").get(1).select("td").get(1);
 					booking.userName = userInfo.select("b").first().text();

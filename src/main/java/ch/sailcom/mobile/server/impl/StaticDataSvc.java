@@ -1,6 +1,7 @@
 package ch.sailcom.mobile.server.impl;
 
 import java.io.IOException;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,7 +23,7 @@ public class StaticDataSvc {
 
 	public static StaticData getStaticData() throws IOException {
 
-		Document doc = Jsoup.connect(STATIC_DATA_URL).get();
+		Document doc = Jsoup.parse(new URL(STATIC_DATA_URL).openStream(), "ISO-8859-1", STATIC_DATA_URL);
 
 		Element main = doc.select("div#" + MAIN_DIV).first();
 		Element tab = main.select("table").first();
@@ -44,13 +45,13 @@ public class StaticDataSvc {
 		 *     offenes Kielboot
 		 *   </td>
 		 *   <td --2-- class='norm'>
-		 *     Ägerisee<br>
-		 *     <a href='hafen.php?id=46'>Oberägeri</a><br>
-		 *     Oberägeri - Bojenfeld
+		 *     Ã„gerisee<br>
+		 *     <a href='hafen.php?id=46'>OberÃ¤geri</a><br>
+		 *     OberÃ¤geri - Bojenfeld
 		 *   </td>
 		 *   <td --3-- class='norm'>
 		 *     7&nbsp;Pers.<br>
-		 *     37 m²<br>
+		 *     37 mÂ²<br>
 		 *     L:&nbsp;7.97&nbsp;m
 		 *   </td>
 		 *   </td>
@@ -63,6 +64,7 @@ public class StaticDataSvc {
 		 * 
 		 */
 
+		// Skip Header Row
 		for (int i = 1; i < rows.size(); i++) {
 
 			Elements cells = rows.get(i).select("td");
@@ -79,9 +81,14 @@ public class StaticDataSvc {
 			c = cells.get(1);
 			s.id = Integer.parseInt(c.select("a").first().attr("href").split("=")[1]);
 			s.name = c.select("a").first().text();
-			tn = c.textNodes();
-			s.nrPlate = tn.get(0).getWholeText();
-			s.type = tn.get(1).getWholeText();
+			String[] descnParts = c.html().split("\u003cbr /\u003e"); // <br /> with utf escapes 
+			if (descnParts.length == 3) {
+				s.nrPlate = descnParts[1];
+				s.type = descnParts[2];
+			} else {
+				s.nrPlate = c.html();
+				s.type = "";
+			}
 
 			c = cells.get(2);
 			tn = c.textNodes();

@@ -24,6 +24,7 @@ import ch.sailcom.mobile.Harbor;
 import ch.sailcom.mobile.Ship;
 import ch.sailcom.mobile.Trip;
 import ch.sailcom.mobile.User;
+import ch.sailcom.mobile.WeatherInfo;
 import ch.sailcom.mobile.server.ServerSession;
 
 public class ServerSessionImpl implements ServerSession {
@@ -318,6 +319,15 @@ public class ServerSessionImpl implements ServerSession {
 	public List<Booking> getBookings(int shipId, Date fromDate, int nofWeeks) {
 		try {
 			return BookSvc.getBookings(this, shipId, fromDate, nofWeeks);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@Override
+	public List<WeatherInfo> getWeatherInfo(int harborId, boolean isDet) {
+		try {
+			return WeatherSvc.getWeatherInfo(this, harborId, isDet);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}

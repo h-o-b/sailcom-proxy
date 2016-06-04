@@ -10,12 +10,16 @@ public class Booking implements Serializable {
 	public int harborId;
 	public int lakeId;
 
-	public String date;
-	public String timeFrom;
-	public String timeTo;
-	public String dateFrom;
-	public String dateTo;
+	public String bookDate;
+	public String bookTimeFrom;
+	public String bookTimeTo;
+
 	public int tripId;
+	public boolean isMine;
+	public String tripDateFrom;
+	public String tripTimeFrom;
+	public String tripDateTo;
+	public String tripTimeTo;
 
 	public String userName;
 	public String userAdress;

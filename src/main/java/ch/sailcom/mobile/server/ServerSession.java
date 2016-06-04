@@ -9,6 +9,7 @@ import ch.sailcom.mobile.Harbor;
 import ch.sailcom.mobile.Ship;
 import ch.sailcom.mobile.Trip;
 import ch.sailcom.mobile.User;
+import ch.sailcom.mobile.WeatherInfo;
 
 public interface ServerSession {
 
@@ -37,5 +38,7 @@ public interface ServerSession {
 
 	List<Trip> getTrips();
 	List<Booking> getBookings(int shipId, Date fromDate, int nofWeeks);
+
+	List<WeatherInfo> getWeatherInfo(int harborId, boolean isDet);
 
 }

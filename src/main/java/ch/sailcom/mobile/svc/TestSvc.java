@@ -60,15 +60,11 @@ public class TestSvc extends HttpServlet {
 		writer.println("  </tr>");
 		writer.println("  <tr>");
 		writer.println("    <td>Harbors</td>");
-		writer.println("    <td><a href='harbors'>Harbors</a>, <a href='harbors/my'>My Harbors</a>, <a href='harbors/14'>Single Harbor</a></td>");
+		writer.println("    <td><a href='harbors'>Harbors</a>, <a href='harbors/my'>My Harbors</a>, <a href='harbors/14'>Single Harbor (La Neveville)</a></td>");
 		writer.println("  </tr>");
 		writer.println("  <tr>");
 		writer.println("    <td>Ships</td>");
 		writer.println("    <td><a href='ships'>Ships</a>, <a href='ships/my'>My Ships</a>, <a href='ships/147'>Single Ship</a></td>");
-		writer.println("  </tr>");
-		writer.println("  <tr>");
-		writer.println("    <td></td>");
-		writer.println("    <td></td>");
 		writer.println("  </tr>");
 		writer.println("</table>");
 
@@ -84,7 +80,27 @@ public class TestSvc extends HttpServlet {
 		writer.println("<table>");
 		writer.println("  <tr>");
 		writer.println("    <td>Bookings</td>");
-		writer.println("    <td><a href='bookings?shipId=161'>Bookings for Today (Ship 161)</a>, <a href='bookings?shipId=161&date=01.07.2014&nofWeeks=5'>Bookings for Juli 14 (Ship 161)</a></td>");
+		writer.println("    <td><a href='bookings?shipId=112&date=01.09.2014&nofWeeks=2'>Bookings for September 2014 (Ship 112)</a></td>");
+		writer.println("  </tr>");
+		writer.println("  <tr>");
+		writer.println("    <td>&nbsp;</td>");
+		writer.println("    <td><a href='bookings?shipId=161'>Bookings around Today (Ship 161)</a></td>");
+		writer.println("  </tr>");
+		writer.println("  <tr>");
+		writer.println("    <td>&nbsp;</td>");
+		writer.println("    <td><a href='bookings?shipId=161&date=01.07.2014&nofWeeks=5'>Bookings for Juli 2014 (Ship 161)</a></td>");
+		writer.println("  </tr>");
+		writer.println("</table>");
+
+		writer.println("<h2>Weather</h2>");
+		writer.println("<table>");
+		writer.println("  <tr>");
+		writer.println("    <td>Weather overview</td>");
+		writer.println("    <td><a href='weather/14'>La Neveville</a></td>");
+		writer.println("  </tr>");
+		writer.println("  <tr>");
+		writer.println("    <td>Weather details</td>");
+		writer.println("    <td><a href='weather/14?det=true'>La Neveville</a></td>");
 		writer.println("  </tr>");
 		writer.println("</table>");
 
@@ -95,6 +111,7 @@ public class TestSvc extends HttpServlet {
 //		response.addCookie(c);
 
 		writer.close();
+
 	}
 
 }
