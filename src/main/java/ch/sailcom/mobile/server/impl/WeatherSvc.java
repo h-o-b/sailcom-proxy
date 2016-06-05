@@ -36,8 +36,8 @@ public class WeatherSvc {
 		 *         </div>
 		 *       </div>
 		 *       <div class="temps">
-		 *         <div class="tab_temp_max" style="background-color: #D8F7A1; color: #000000">18 °C</div>
-		 *         <div class="tab_temp_min" style="background-color: #007229; color: #ffffff">10 °C</div>
+		 *         <div class="tab_temp_max" style="background-color: #D8F7A1; color: #000000">18C</div>
+		 *         <div class="tab_temp_min" style="background-color: #007229; color: #ffffff">10C</div>
 		 *       </div>
 		 *       <div class="data">
 		 *         <div class="wind">

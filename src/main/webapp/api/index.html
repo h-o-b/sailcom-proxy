@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+
+<html ng-app="app">
+
+	<head>
+
+		<meta charset="utf-8">
+		<title>SailCom REST API</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<link rel="icon" href="favicon.ico">
+
+		<!-- jQuery -->
+		<script src="lib/js/jquery-2.2.4.min.js"></script>
+		<script>
+			$.noConflict();
+		</script>
+
+		<!-- AngularJS -->
+		<script src="lib/js/angular.min.js"></script>
+
+		<!-- Bootstrap -->
+		<link href="lib/css/bootstrap.min.css" rel="stylesheet">
+		<script src="lib/js/bootstrap.min.js"></script>
+
+		<!-- Application -->
+		<script src="js/app.js"></script>
+		<script src="js/app-controller.js"></script>
+		<link href="css/app.css" rel="stylesheet">
+
+	</head>
+
+<body ng-controller="AppController">
+
+	<div id="spinner" ng-show="httpInfo.isActive"><img src="img/spinner.gif"></div>
+
+	<div class="container-fluid">
+
+		<div class="row">
+			<div class="col-xs-12">
+				<h1>SailCom REST API</h1>
+			</div>
+		</div>
+
+		<div class="row">
+
+			<div id="links" class="col-xs-4">
+
+				<table>
+
+					<tr>
+						<td colspan="2"><h2>Session Handling</h2></td>
+					</tr>
+					<tr>
+						<td>Login</td>
+						<td>
+							<a href="#" ng-click="login(82219, 'segeln')">Login (correct)</a>,
+							<a href="#" ng-click="login(82219, 'segel')">Login (wrong pwd)</a>
+						</td>
+					</tr>
+					<tr>
+						<td>Logout</td>
+						<td><a href='#' ng-click='logout()'>Logout</a></td>
+					</tr>
+
+					<tr>
+						<td colspan="2"><h2>Static Data</h2></td>
+					</tr>
+					<tr>
+						<td>Lakes</td>
+						<td>
+							<a href="#" ng-click="execRequest('lakes')">All Lakes</a>,
+							<a href="#" ng-click="execRequest('lakes/my')">My Lakes</a>,
+							<a href="#" ng-click="execRequest('lakes/1')">Lake 1</a>
+						</td>
+					</tr>
+					<tr>
+						<td>Harbors</td>
+						<td>
+							<a href="#" ng-click="execRequest('harbors')">All Harbors</a>,
+							<a href="#" ng-click="execRequest('harbors/my')">My Harbors</a>,
+							<a href="#" ng-click="execRequest('harbors/14')">Harbor 14 (La Neuveville)</a>
+						</td>
+					</tr>
+					<tr>
+						<td>Ships</td>
+						<td>
+							<a href="#" ng-click="execRequest('ships')">All Ships</a>,
+							<a href="#" ng-click="execRequest('ships/my')">My Ships</a>,
+							<a href="#" ng-click="execRequest('ships/147')">Ship 147</a>
+						</td>
+					</tr>
+
+					<tr>
+						<td colspan="2"><h2>Trips</h2></td>
+					</tr>
+					<tr>
+						<td>Trips</td>
+						<td>
+							<a href="#" ng-click="execRequest('trips')">My Trips</a>
+						</td>
+					</tr>
+
+					<tr>
+						<td colspan="2"><h2>Bookings</h2></td>
+					</tr>
+					<tr>
+						<td>Bookings</td>
+						<td>
+							<a href="#" ng-click="execRequest('bookings?shipId=112&date=01.09.2014&nofWeeks=2')">Bookings for Ship 112, September 2014</a>
+						</td>
+					</tr>
+					<tr>
+						<td>&nbsp;</td>
+						<td>
+							<a href="#" ng-click="execRequest('bookings?shipId=161')">Bookings around Today (Ship 161)</a>
+						</td>
+					</tr>
+					<tr>
+						<td>&nbsp;</td>
+						<td>
+							<a href="#" ng-click="execRequest('bookings?shipId=161&date=01.07.2014&nofWeeks=5')">Bookings for Juli 2014 (Ship 161)</a>
+						</td>
+					</tr>
+
+					<tr>
+						<td colspan="2"><h2>Weather</h2></td>
+					</tr>
+					<tr>
+						<td>Weather overview</td>
+						<td>
+							<a href="#" ng-click="execRequest('weather/14')">La Neveville</a>
+						</td>
+					</tr>
+					<tr>
+						<td>Weather details</td>
+						<td>
+							<a href="#" ng-click="execRequest('weather/14?det=true')">La Neveville</a>
+						</td>
+					</tr>
+
+					<tr>
+						<td colspan="2"><h2>Misc</h2></td>
+					</tr>
+					<tr>
+						<td>General</td>
+						<td>
+							<a href="#" ng-click="execRequest('somewhere')">404</a>
+						</td>
+					</tr>
+				</table>
+
+			</div>
+
+			<div id="result" class="col-xs-8">
+				<h3 id="url">{{httpInfo.url}}</h3>
+				<pre id="resultCode">{{httpInfo.resultCode}}</pre>
+				<pre id="resultText">{{httpInfo.resultText}}</pre>
+				<iframe id="resultHtml" src="about:blank" frameBorder="0" width="100%" height="600px">
+					{{httpInfo.resultHtml}}
+				</iframe>
+			</div>
+
+		</div>
+
+	</div>
+
+</body>
+
+</html>

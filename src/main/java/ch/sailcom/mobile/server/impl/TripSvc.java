@@ -28,7 +28,7 @@ public class TripSvc {
 		 * https://www.sailcomnet.ch/net/res_edit.php?lng=de
 		 *
 		 * <div id="Hauptteil">
-		 *   <p style='text-align: center'><span class='titel'>Reservation ändern / annullieren</span></p>
+		 *   <p style='text-align: center'><span class='titel'>Reservation Ã¤ndern / annullieren</span></p>
 		 *   <form method='post' action='/net/res_edit.php' name='form1'>
 		 *   <table cellpadding="3" cellspacing="0" style="border-collapse: collapse;" width="100%">
 		 *     <tr>
@@ -46,11 +46,11 @@ public class TripSvc {
 		 *         16:00&nbsp;h
 		 *       </td>
 		 *     1 <td class='norm' width='100' valign='top'>
-		 *         <b>Albin Viggen</b>, Brunnen - Föhnhafen
+		 *         <b>Albin Viggen</b>, Brunnen - FÃ¶hnhafen
 		 *       </td>
 		 *     2 <td class='norm' align='right' width='110' valign='top'>
 		 *         90.00<br>
-		 *         + 20 % Amtsträger-Beitrag<br>
+		 *         + 20 % AmtstrÃ¤ger-Beitrag<br>
 		 *         - 20 % <br>
 		 *         <b>= CHF&nbsp;90.00</b>
 		 *       </td>

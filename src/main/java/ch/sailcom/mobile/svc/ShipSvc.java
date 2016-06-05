@@ -1,83 +1,96 @@
 package ch.sailcom.mobile.svc;
 
 import java.io.IOException;
-import java.io.PrintWriter;
+import java.util.List;
 
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
 
 import ch.sailcom.mobile.Ship;
 import ch.sailcom.mobile.server.ServerSession;
-import ch.sailcom.mobile.server.impl.NoSessionException;
 
 /**
- * Servlet implementation class LakeSvc
+ * Ship Service
  */
-@WebServlet("/ships/*")
-public class ShipSvc extends HttpServlet {
+@Path("/ships")
+public class ShipSvc {
 
-	private static final long serialVersionUID = 1L;
-
-	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
-	 */
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public List<Ship> getAllShips(
+		@Context HttpServletRequest request,
+		@Context HttpServletResponse response
+	) throws IOException {
 
 		HttpSession clientSession = request.getSession(true);
 		ServerSession serverSession = SvcUtil.getServerSession(clientSession);
 
-		try {
-
-			if (!serverSession.isLoggedIn()) {
-				response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-				return;
-			}
-			if (!serverSession.isConnected()) {
-				serverSession.connect();
-			}
-
-			response.setContentType("application/json");
-
-			if (request.getPathInfo() == null) {
-				PrintWriter writer = response.getWriter();
-				writer.println(SvcUtil.toJson(serverSession.getShips()));
-				writer.flush();
-				writer.close();
-			} else if (request.getPathInfo().equals("/my")) {
-				PrintWriter writer = response.getWriter();
-				writer.println(SvcUtil.toJson(serverSession.getMyShips()));
-				writer.flush();
-				writer.close();
-			} else if (SvcUtil.isId(request.getPathInfo().substring(1))) {
-				int shipId = Integer.parseInt(request.getPathInfo().substring(1));
-				Ship s = serverSession.getShip(shipId);
-				if (s != null) {
-					PrintWriter writer = response.getWriter();
-					writer.println(SvcUtil.toJson(s));
-					writer.flush();
-					writer.close();
-				} else {
-					response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-				}
-			} else {
-				response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-			}
-
-		} catch (NoSessionException e) {
-
-			e.printStackTrace();
+		if (!serverSession.isLoggedIn()) {
 			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-	
-		} catch (IOException e) {
-
-			e.printStackTrace();
-			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-	
+			return null;
 		}
+
+		if (!serverSession.isConnected()) {
+			serverSession.connect();
+		}
+
+		return serverSession.getShips();
+
+	}
+
+	@GET
+	@Path("/my")
+	@Produces(MediaType.APPLICATION_JSON)
+	public List<Ship> getMyShips(
+		@Context HttpServletRequest request,
+		@Context HttpServletResponse response
+	) throws IOException {
+
+		HttpSession clientSession = request.getSession(true);
+		ServerSession serverSession = SvcUtil.getServerSession(clientSession);
+
+		if (!serverSession.isLoggedIn()) {
+			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+			return null;
+		}
+
+		if (!serverSession.isConnected()) {
+			serverSession.connect();
+		}
+
+		return serverSession.getMyShips();
+
+	}
+
+	@GET
+	@Path("/{shipId}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Ship getShip(
+		@Context HttpServletRequest request,
+		@Context HttpServletResponse response,
+		@PathParam("shipId") Integer shipId
+	) throws IOException {
+
+		HttpSession clientSession = request.getSession(true);
+		ServerSession serverSession = SvcUtil.getServerSession(clientSession);
+
+		if (!serverSession.isLoggedIn()) {
+			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+			return null;
+		}
+
+		if (!serverSession.isConnected()) {
+			serverSession.connect();
+		}
+
+		return serverSession.getShip(shipId);
 
 	}
 

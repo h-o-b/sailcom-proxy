@@ -1,83 +1,96 @@
 package ch.sailcom.mobile.svc;
 
 import java.io.IOException;
-import java.io.PrintWriter;
+import java.util.List;
 
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
 
 import ch.sailcom.mobile.Harbor;
 import ch.sailcom.mobile.server.ServerSession;
-import ch.sailcom.mobile.server.impl.NoSessionException;
 
 /**
- * Servlet implementation class HarborSvc
+ * Harbor Service
  */
-@WebServlet("/harbors/*")
-public class HarborSvc extends HttpServlet {
+@Path("/harbors")
+public class HarborSvc {
 
-	private static final long serialVersionUID = 1L;
-
-	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
-	 */
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException {
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public List<Harbor> getAllHarbors(
+		@Context HttpServletRequest request,
+		@Context HttpServletResponse response
+	) throws IOException {
 
 		HttpSession clientSession = request.getSession(true);
 		ServerSession serverSession = SvcUtil.getServerSession(clientSession);
 
-		try {
-
-			if (!serverSession.isLoggedIn()) {
-				response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-				return;
-			}
-			if (!serverSession.isConnected()) {
-				serverSession.connect();
-			}
-
-			response.setContentType("application/json");
-
-			if (request.getPathInfo() == null) {
-				PrintWriter writer = response.getWriter();
-				writer.println(SvcUtil.toJson(serverSession.getHarbors()));
-				writer.flush();
-				writer.close();
-			} else if (request.getPathInfo().equals("/my")) {
-				PrintWriter writer = response.getWriter();
-				writer.println(SvcUtil.toJson(serverSession.getMyHarbors()));
-				writer.flush();
-				writer.close();
-			} else if (SvcUtil.isId(request.getPathInfo().substring(1))) {
-				int harborId = Integer.parseInt(request.getPathInfo().substring(1));
-				Harbor h = serverSession.getHarbor(harborId);
-				if (h != null) {
-					PrintWriter writer = response.getWriter();
-					writer.println(SvcUtil.toJson(h));
-					writer.flush();
-					writer.close();
-				} else {
-					response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-				}
-			} else {
-				response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-			}
-
-		} catch (NoSessionException e) {
-
-			e.printStackTrace();
+		if (!serverSession.isLoggedIn()) {
 			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-	
-		} catch (IOException e) {
-
-			e.printStackTrace();
-			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-	
+			return null;
 		}
+
+		if (!serverSession.isConnected()) {
+			serverSession.connect();
+		}
+
+		return serverSession.getHarbors();
+
+	}
+
+	@GET
+	@Path("/my")
+	@Produces(MediaType.APPLICATION_JSON)
+	public List<Harbor> getMyHarbors(
+		@Context HttpServletRequest request,
+		@Context HttpServletResponse response
+	) throws IOException {
+
+		HttpSession clientSession = request.getSession(true);
+		ServerSession serverSession = SvcUtil.getServerSession(clientSession);
+
+		if (!serverSession.isLoggedIn()) {
+			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+			return null;
+		}
+
+		if (!serverSession.isConnected()) {
+			serverSession.connect();
+		}
+
+		return serverSession.getMyHarbors();
+
+	}
+
+	@GET
+	@Path("/{harborId}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Harbor getHarbor(
+		@Context HttpServletRequest request,
+		@Context HttpServletResponse response,
+		@PathParam("harborId") Integer harborId
+	) throws IOException {
+
+		HttpSession clientSession = request.getSession(true);
+		ServerSession serverSession = SvcUtil.getServerSession(clientSession);
+
+		if (!serverSession.isLoggedIn()) {
+			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+			return null;
+		}
+
+		if (!serverSession.isConnected()) {
+			serverSession.connect();
+		}
+
+		return serverSession.getHarbor(harborId);
 
 	}
 

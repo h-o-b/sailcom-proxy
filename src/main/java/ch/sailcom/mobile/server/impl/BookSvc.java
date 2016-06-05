@@ -75,7 +75,7 @@ public class BookSvc {
 		 *               <td valign='top'>
 		 *                 <b>Thomas Wanner</b><br>
 		 *                 Heidenstrasse 18<br>
-		 *                 4142 Münchenstein<br>
+		 *                 4142 MÃ¼nchenstein<br>
 		 *                 Tel. P: 061  312 29 59<br>
 		 *                 Mobil: 079 747 84 45<br>
 		 *                 <a href='mailto:th.wanner@bluewin.ch'>th.wanner@bluewin.ch</a>

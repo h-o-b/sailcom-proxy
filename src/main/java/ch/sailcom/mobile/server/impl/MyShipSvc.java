@@ -26,13 +26,13 @@ public class MyShipSvc {
 		 *   <form method="post" action="/net/res_neu.php" name="form1">
 		 *     <table cellpadding="3" cellspacing="0" style="border-collapse: collapse;" >
 		 *       <tr>
-		 *         <td colspan="2">Bitte beachte: Auf der untenstehenden Liste erscheinen nur diejenigen Boote, die Du eingesegelt hast und welche zur Zeit zur Verfügung stehen (nicht ausgewassert).</td>
+		 *         <td colspan="2">Bitte beachte: Auf der untenstehenden Liste erscheinen nur diejenigen Boote, die Du eingesegelt hast und welche zur Zeit zur VerfÃ¼gung stehen (nicht ausgewassert).</td>
 		 *       </tr>
 		 *       <tr>
 		 *         <td><b>Boot:</b></td>
 		 *         <td>
 		 *           <select size="1" name="boot" onChange='searchSuggest();'>
-		 *             <option value='112' selected>Vierwaldstättersee, Brunnen - Föhnhafen, Albin Viggen</option>
+		 *             <option value='112' selected>VierwaldstÃ¤ttersee, Brunnen - FÃ¶hnhafen, Albin Viggen</option>
 		 *           </select>
 		 *         </td>
 		 *       </tr>
