@@ -189,7 +189,7 @@ public class ServerSessionImpl implements ServerSession {
 		try {
 
 			URL loginPage = new URL(LOGIN_FORM_URL);
-		    HttpsURLConnection loginConnection = (HttpsURLConnection) loginPage.openConnection();
+			HttpsURLConnection loginConnection = (HttpsURLConnection) loginPage.openConnection();
 			loginConnection.connect();
 			loginConnection.getContent();
 
