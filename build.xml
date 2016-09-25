@@ -1,0 +1,13 @@
+<project name="sailcom-proxy" default="dist" basedir=".">
+
+	<description>Sailcom Proxy Local Distribution (Tomcat)</description>
+
+	<property name="target" location="target"/>
+	<property name="war" value="sailcom-proxy.war"/>
+	<property name="dist" location="T:/"/>
+
+	<target name="dist" description="Push war file to local Tomcat">
+		<copy file="${target}/${war}" todir="${dist}"/>
+	</target>
+
+</project>

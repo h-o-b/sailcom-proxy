@@ -49,7 +49,7 @@ function AppController($scope, $rootScope, $http) {
 
 	$scope.execRequest = function(url, f) {
 		$scope.startAjax(url);
-		var api = "http://hannes-brunner.no-ip.org/sailcom-proxy/" + url;
+		var api = "/sailcom-proxy/" + url;
 /*
 		if ($scope.sessionInfo.session) {
 			api += (api.indexOf("?") >= 0 ? "&" : "?") + "session=" + encodeURIComponent($scope.sessionInfo.session);
