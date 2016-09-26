@@ -15,6 +15,7 @@ import javax.ws.rs.core.MediaType;
 import ch.sailcom.server.dto.Ship;
 import ch.sailcom.server.dto.User;
 import ch.sailcom.server.dto.UserInfo;
+import ch.sailcom.server.dto.UserPreference;
 import ch.sailcom.server.proxy.StaticDataProxy;
 import ch.sailcom.server.proxy.UserDataProxy;
 import ch.sailcom.server.rest.util.Authenticated;
@@ -43,6 +44,13 @@ public class UserSvc {
 	}
 
 	@GET
+	@Path("/pref")
+	@Produces(MediaType.APPLICATION_JSON)
+	public UserPreference getUserPreference() throws IOException {
+		return SvcUtil.getSessionProxy(request).getProxy(UserDataProxy.class).getUserPreference();
+	}
+
+	@GET
 	@Path("/lakes")
 	@Produces(MediaType.APPLICATION_JSON)
 	public List<Integer> getLakes() throws IOException {
@@ -68,7 +76,7 @@ public class UserSvc {
 	@Produces(MediaType.APPLICATION_JSON)
 	public List<Integer> likeShip(@PathParam("shipId") Integer shipId) throws IOException {
 		Ship ship = SvcUtil.getSessionProxy(request).getProxy(StaticDataProxy.class).getShip(shipId);
-		return SvcUtil.getSessionProxy(request).getProxy(UserDataProxy.class).getUserData().like(ship);
+		return SvcUtil.getSessionProxy(request).getProxy(UserDataProxy.class).like(ship);
 	}
 
 	@GET
@@ -76,7 +84,7 @@ public class UserSvc {
 	@Produces(MediaType.APPLICATION_JSON)
 	public List<Integer> unlikeShip(@PathParam("shipId") Integer shipId) throws IOException {
 		Ship ship = SvcUtil.getSessionProxy(request).getProxy(StaticDataProxy.class).getShip(shipId);
-		return SvcUtil.getSessionProxy(request).getProxy(UserDataProxy.class).getUserData().unlike(ship);
+		return SvcUtil.getSessionProxy(request).getProxy(UserDataProxy.class).unlike(ship);
 	}
 
 	@GET
@@ -84,7 +92,7 @@ public class UserSvc {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Map<Integer, Integer> rateShip(@PathParam("shipId") Integer shipId, @PathParam("starCount") Integer starCount) throws IOException {
 		Ship ship = SvcUtil.getSessionProxy(request).getProxy(StaticDataProxy.class).getShip(shipId);
-		return SvcUtil.getSessionProxy(request).getProxy(UserDataProxy.class).getUserData().rate(ship, starCount);
+		return SvcUtil.getSessionProxy(request).getProxy(UserDataProxy.class).rate(ship, starCount);
 	}
 
 }

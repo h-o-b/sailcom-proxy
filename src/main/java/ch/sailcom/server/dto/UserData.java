@@ -32,9 +32,14 @@ public class UserData {
 		userInfo.availableLakes = new ArrayList<Integer>(this.availableLakesById.keySet());
 		userInfo.availableHarbors = new ArrayList<Integer>(this.availableHarborsById.keySet());
 		userInfo.availableShips = new ArrayList<Integer>(this.availableShipsById.keySet());
-		userInfo.favoriteShips = new ArrayList<Integer>(this.favoriteShipsById.keySet());
-		userInfo.starredShips = new HashMap<Integer, Integer>(this.starredShipsById);
 		return userInfo;
+	}
+
+	public UserPreference getUserPreference() {
+		UserPreference userPreference = new UserPreference();
+		userPreference.favoriteShips = new ArrayList<Integer>(this.favoriteShipsById.keySet());
+		userPreference.starredShips = new HashMap<Integer, Integer>(this.starredShipsById);
+		return userPreference;
 	}
 
 	public void addShip(int shipId) {
