@@ -12,11 +12,13 @@ import javax.ws.rs.core.MediaType;
 
 import ch.sailcom.server.dto.Trip;
 import ch.sailcom.server.proxy.BookingProxy;
+import ch.sailcom.server.rest.filter.Authenticated;
 
 /**
  * Trip Service
  */
 @Path("/trips")
+@Authenticated
 public class TripSvc {
 
 	@GET

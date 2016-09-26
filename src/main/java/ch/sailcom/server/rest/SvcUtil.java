@@ -15,8 +15,8 @@ public class SvcUtil {
 	private static final String SESSION = "sailcomSession";
 
 	public static SessionProxy getSessionProxy(HttpServletRequest request) {
-		HttpSession clientSession = request.getSession(true);
-		return (SessionProxy) clientSession.getAttribute(SESSION);
+		HttpSession clientSession = request.getSession();
+		return clientSession == null ? null : (SessionProxy) clientSession.getAttribute(SESSION);
 	}
 
 	public static SessionProxy initSessionProxy(HttpServletRequest request) {

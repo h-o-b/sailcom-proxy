@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import ch.sailcom.server.dto.SessionInfo;
 import ch.sailcom.server.proxy.SessionProxy;
 import ch.sailcom.server.proxy.impl.NoSessionException;
+import ch.sailcom.server.rest.filter.Authenticated;
 
 /**
  * Sailcom SessionProxy Service
@@ -63,6 +64,7 @@ public class SessionSvc {
 	@GET
 	@Path("/logout")
 	@Produces(MediaType.APPLICATION_JSON)
+	@Authenticated
 	public void logout(@Context HttpServletRequest request) throws IOException {
 
 		SessionProxy session = SvcUtil.getSessionProxy(request);

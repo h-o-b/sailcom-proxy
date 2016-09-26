@@ -14,11 +14,13 @@ import javax.ws.rs.core.MediaType;
 
 import ch.sailcom.server.dto.WeatherInfo;
 import ch.sailcom.server.proxy.WeatherProxy;
+import ch.sailcom.server.rest.filter.Authenticated;
 
 /**
  * Weather Service
  */
 @Path("/weather")
+@Authenticated
 public class WeatherSvc {
 
 	@GET

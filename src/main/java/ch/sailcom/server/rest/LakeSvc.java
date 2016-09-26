@@ -14,11 +14,13 @@ import javax.ws.rs.core.MediaType;
 import ch.sailcom.server.dto.Lake;
 import ch.sailcom.server.proxy.StaticDataProxy;
 import ch.sailcom.server.proxy.UserDataProxy;
+import ch.sailcom.server.rest.filter.Authenticated;
 
 /**
  * Lake Service
  */
 @Path("/lakes")
+@Authenticated
 public class LakeSvc {
 
 	@GET

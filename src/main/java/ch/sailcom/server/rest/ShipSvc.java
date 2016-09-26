@@ -14,37 +14,42 @@ import javax.ws.rs.core.MediaType;
 import ch.sailcom.server.dto.Ship;
 import ch.sailcom.server.proxy.StaticDataProxy;
 import ch.sailcom.server.proxy.UserDataProxy;
+import ch.sailcom.server.rest.filter.Authenticated;
 
 /**
  * Ship Service
  */
 @Path("/ships")
+@Authenticated
 public class ShipSvc {
+
+	@Context
+	HttpServletRequest request;
 
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public List<Ship> getAllShips(@Context HttpServletRequest request) throws IOException {
+	public List<Ship> getAllShips() throws IOException {
 		return SvcUtil.getSessionProxy(request).getProxy(StaticDataProxy.class).getShips();
 	}
 
 	@GET
 	@Path("/my")
 	@Produces(MediaType.APPLICATION_JSON)
-	public List<Ship> getMyShips(@Context HttpServletRequest request) throws IOException {
+	public List<Ship> getMyShips() throws IOException {
 		return SvcUtil.getSessionProxy(request).getProxy(UserDataProxy.class).getMyShips();
 	}
 
 	@GET
 	@Path("/{shipId}")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Ship getShip(@Context HttpServletRequest request, @PathParam("shipId") Integer shipId) throws IOException {
+	public Ship getShip(@PathParam("shipId") Integer shipId) throws IOException {
 		return SvcUtil.getSessionProxy(request).getProxy(StaticDataProxy.class).getShip(shipId);
 	}
 
 	@GET
 	@Path("/{shipId}/like")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Ship likeShip(@Context HttpServletRequest request, @PathParam("shipId") Integer shipId) throws IOException {
+	public Ship likeShip(@PathParam("shipId") Integer shipId) throws IOException {
 		Ship ship = SvcUtil.getSessionProxy(request).getProxy(StaticDataProxy.class).getShip(shipId);
 		return SvcUtil.getSessionProxy(request).getProxy(UserDataProxy.class).getUserData().like(ship);
 	}
@@ -52,7 +57,7 @@ public class ShipSvc {
 	@GET
 	@Path("/{shipId}/unlike")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Ship unlikeShip(@Context HttpServletRequest request, @PathParam("shipId") Integer shipId) throws IOException {
+	public Ship unlikeShip(@PathParam("shipId") Integer shipId) throws IOException {
 		Ship ship = SvcUtil.getSessionProxy(request).getProxy(StaticDataProxy.class).getShip(shipId);
 		return SvcUtil.getSessionProxy(request).getProxy(UserDataProxy.class).getUserData().unlike(ship);
 	}

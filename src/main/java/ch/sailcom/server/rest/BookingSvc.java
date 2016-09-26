@@ -23,11 +23,13 @@ import ch.sailcom.server.dto.Booking;
 import ch.sailcom.server.dto.StaticData;
 import ch.sailcom.server.proxy.BookingProxy;
 import ch.sailcom.server.proxy.StaticDataProxy;
+import ch.sailcom.server.rest.filter.Authenticated;
 
 /**
  * Bookings Service
  */
 @Path("/bookings")
+@Authenticated
 public class BookingSvc {
 
 	private DateFormat df = new SimpleDateFormat("dd.MM.yyyy");
