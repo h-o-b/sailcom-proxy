@@ -7,16 +7,22 @@ import javax.servlet.http.HttpSession;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import ch.sailcom.server.proxy.SessionProxy;
 import ch.sailcom.server.proxy.impl.SessionProxyImpl;
 
 public class SvcUtil {
 
+	private static Logger LOGGER = LoggerFactory.getLogger(SvcUtil.class);
+
 	private static final String SESSION = "sailcomSession";
 
 	public static SessionProxy getSessionProxy(HttpServletRequest request) {
 		HttpSession clientSession = request.getSession();
-		return clientSession == null ? null : (SessionProxy) clientSession.getAttribute(SESSION);
+		SessionProxy session = clientSession == null ? null : (SessionProxy) clientSession.getAttribute(SESSION);
+		return session;
 	}
 
 	public static SessionProxy initSessionProxy(HttpServletRequest request) {

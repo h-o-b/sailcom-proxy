@@ -37,30 +37,36 @@ public class SessionSvc {
 	@Produces(MediaType.APPLICATION_JSON)
 	public SessionInfo login(@QueryParam("user") String user, @QueryParam("pwd") String pwd) throws IOException {
 
-		if (user == null) {
-			throw new WebApplicationException(Response.status(HttpURLConnection.HTTP_BAD_REQUEST).entity(SvcUtil.getErrorMessage("user parameter is mandatory")).build());
-		} else if (pwd == null) {
-			throw new WebApplicationException(Response.status(HttpURLConnection.HTTP_BAD_REQUEST).entity(SvcUtil.getErrorMessage("pwd parameter is mandatory")).build());
-		}
+		try {
+			if (user == null) {
+				throw new WebApplicationException(Response.status(HttpURLConnection.HTTP_BAD_REQUEST).entity(SvcUtil.getErrorMessage("user parameter is mandatory")).build());
+			} else if (pwd == null) {
+				throw new WebApplicationException(Response.status(HttpURLConnection.HTTP_BAD_REQUEST).entity(SvcUtil.getErrorMessage("pwd parameter is mandatory")).build());
+			}
 
-		SessionProxy session = SvcUtil.getSessionProxy(request);
-		if (session == null) {
-			LOGGER.info("login.initSessionProxy {}", user);
-			session = SvcUtil.initSessionProxy(request);
-		}
+			SessionProxy session = SvcUtil.getSessionProxy(request);
+			if (session == null) {
+				LOGGER.info("login.initSessionProxy {}", user);
+				session = SvcUtil.initSessionProxy(request);
+			}
 
-		if (session.isLoggedIn()) {
+			if (session.isLoggedIn()) {
+				return new SessionInfo(session.getSessionId(), session.getUser());
+			}
+
+			LOGGER.info("User {} logging in ...", user);
+			if (!session.login(user, pwd)) {
+				LOGGER.info("User {} login failed", user);
+				throw new WebApplicationException(Response.status(HttpURLConnection.HTTP_UNAUTHORIZED).entity(SvcUtil.getErrorMessage("login denied")).build());
+			}
+
+			LOGGER.info("User {} successfully logged in", user);
 			return new SessionInfo(session.getSessionId(), session.getUser());
-		}
 
-		LOGGER.info("User {} logging in ...", user);
-		if (!session.login(user, pwd)) {
-			LOGGER.info("User {} login failed", user);
-			throw new WebApplicationException(Response.status(HttpURLConnection.HTTP_UNAUTHORIZED).entity(SvcUtil.getErrorMessage("login denied")).build());
+		} catch (Exception e) {
+			LOGGER.error("login crashed", e);
+			throw e;
 		}
-
-		LOGGER.info("User {} successfully logged in", user);
-		return new SessionInfo(session.getSessionId(), session.getUser());
 
 	}
 

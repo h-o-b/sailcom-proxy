@@ -76,6 +76,7 @@ public class SessionProxyImpl implements SessionProxy {
 			LOGGER.info("connect.2");
 			List<HttpCookie> cookies = cookieStore.getCookies();
 			for (HttpCookie cookie : cookies) {
+				LOGGER.info("connect.cookie: " + cookie.getName());
 				if (cookie.getName().equals(SERVER_SESSION_COOKIE)) {
 					sessionCookie = cookie;
 				}
@@ -84,7 +85,8 @@ public class SessionProxyImpl implements SessionProxy {
 			LOGGER.info("connect.3");
 
 		} catch (IOException e) {
-			e.printStackTrace();
+			LOGGER.error("connect crashed", e);
+			throw new RuntimeException(e);
 		}
 
 	}
@@ -122,10 +124,11 @@ public class SessionProxyImpl implements SessionProxy {
 
 			int responseCode = loginFormConnection.getResponseCode();
 
-			LOGGER.info("logon.2");
+			LOGGER.info("logon.2: " + responseCode);
 			if (responseCode == HttpServletResponse.SC_MOVED_TEMPORARILY) {
 
 				String redirectUrl = loginFormConnection.getHeaderField("Location");
+				LOGGER.info("logon.3: " + redirectUrl);
 				if (redirectUrl.startsWith("error.php")) {
 					return false;
 				}
@@ -163,7 +166,7 @@ public class SessionProxyImpl implements SessionProxy {
 
 		} catch (IOException e) {
 
-			e.printStackTrace();
+			LOGGER.error("login crashed", e);
 			throw new RuntimeException(e);
 
 		}
@@ -200,7 +203,8 @@ public class SessionProxyImpl implements SessionProxy {
 			loginConnection.connect();
 			loginConnection.getContent();
 		} catch (IOException e) {
-			e.printStackTrace();
+			LOGGER.error("logout crashed", e);
+			throw new RuntimeException(e);
 		}
 
 	}
