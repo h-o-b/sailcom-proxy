@@ -4,6 +4,5 @@ public class Lake {
 
 	public int id;
 	public String name;
-	public boolean isAvailable;
 
 }

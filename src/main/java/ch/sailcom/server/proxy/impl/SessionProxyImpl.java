@@ -7,7 +7,9 @@ import java.net.CookieManager;
 import java.net.CookieStore;
 import java.net.HttpCookie;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.net.ssl.HttpsURLConnection;
 import javax.servlet.http.HttpServletResponse;
@@ -19,7 +21,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ch.sailcom.server.dto.User;
+import ch.sailcom.server.proxy.BookingProxy;
 import ch.sailcom.server.proxy.SessionProxy;
+import ch.sailcom.server.proxy.StaticDataProxy;
+import ch.sailcom.server.proxy.UserDataProxy;
+import ch.sailcom.server.proxy.WeatherProxy;
 
 public class SessionProxyImpl implements SessionProxy {
 
@@ -40,6 +46,7 @@ public class SessionProxyImpl implements SessionProxy {
 
 	private HttpCookie sessionCookie = null;
 	private User user = null;
+	private Map<Class<?>, Object> proxyMap = new HashMap<Class<?>, Object>();
 
 	public SessionProxyImpl() {
 		synchronized (SERVER_SESSION_COOKIE) {
@@ -51,13 +58,11 @@ public class SessionProxyImpl implements SessionProxy {
 		}
 	}
 
-	@Override
-	public boolean isConnected() {
+	private boolean isConnected() {
 		return sessionCookie != null;
 	}
 
-	@Override
-	public void connect() {
+	private void connect() {
 
 		/* Fetch SessionInfo Cookie */
 		try {
@@ -86,13 +91,17 @@ public class SessionProxyImpl implements SessionProxy {
 
 	@Override
 	public boolean isLoggedIn() {
-		return user != null;
+		return this.user != null;
 	}
 
 	@Override
 	public boolean login(String userNr, String pwd) {
 
-		user = null;
+		this.user = null;
+
+		if (!this.isConnected()) {
+			this.connect();
+		}
 
 		try {
 
@@ -142,6 +151,11 @@ public class SessionProxyImpl implements SessionProxy {
 				user.ip = user.ip.substring(user.ip.indexOf("(IP:"));
 				user.ip = user.ip.substring(4, user.ip.length() - 1);
 
+				this.proxyMap.put(StaticDataProxy.class, new StaticDataProxyImpl());
+				this.proxyMap.put(UserDataProxy.class, new UserDataProxyImpl(getProxy(StaticDataProxy.class).getStaticData()));
+				this.proxyMap.put(BookingProxy.class, new BookingProxyImpl());
+				this.proxyMap.put(WeatherProxy.class, new WeatherProxyImpl());
+
 				LOGGER.info("logon.4");
 				return true;
 
@@ -168,10 +182,17 @@ public class SessionProxyImpl implements SessionProxy {
 		return user;
 	}
 
+	@SuppressWarnings("unchecked")
+	@Override
+	public <T> T getProxy(Class<T> proxyClass) {
+		return (T) this.proxyMap.get(proxyClass);
+	}
+
 	@Override
 	public void logout() {
 
-		user = null;
+		this.user = null;
+		this.proxyMap.clear();
 
 		try {
 			URL loginPage = new URL(LOGOUT_PAGE_URL);

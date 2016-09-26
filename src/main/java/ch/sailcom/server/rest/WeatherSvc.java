@@ -13,6 +13,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
 import ch.sailcom.server.dto.WeatherInfo;
+import ch.sailcom.server.proxy.WeatherProxy;
 
 /**
  * Weather Service
@@ -24,7 +25,7 @@ public class WeatherSvc {
 	@Path("/{harborId}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public List<WeatherInfo> getWeatherInfo(@Context HttpServletRequest request, @PathParam("harborId") Integer harborId, @QueryParam("det") Boolean isDet) throws IOException {
-		return SvcUtil.getWeatherProxy(request).getWeatherInfo(harborId, isDet == null ? false : isDet);
+		return SvcUtil.getSessionProxy(request).getProxy(WeatherProxy.class).getWeatherInfo(harborId, isDet == null ? false : isDet);
 	}
 
 }

@@ -20,6 +20,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import ch.sailcom.server.dto.Booking;
+import ch.sailcom.server.dto.StaticData;
 import ch.sailcom.server.proxy.BookingProxy;
 import ch.sailcom.server.proxy.StaticDataProxy;
 
@@ -36,13 +37,13 @@ public class BookingSvc {
 	public List<Booking> getBookings(@Context HttpServletRequest request, @QueryParam("shipId") Integer shipId, @QueryParam("date") String date, @QueryParam("nofWeeks") Integer nofWeeks)
 			throws IOException {
 
-		StaticDataProxy staticDataProxy = SvcUtil.getStaticDataProxy(request);
-		BookingProxy bookingProxy = SvcUtil.getBookingProxy(request);
+		StaticData sd = SvcUtil.getSessionProxy(request).getProxy(StaticDataProxy.class).getStaticData();
+		BookingProxy bookingProxy = SvcUtil.getSessionProxy(request).getProxy(BookingProxy.class);
 
 		/* Validate Service Input */
 		if (shipId == null) {
 			throw new WebApplicationException(Response.status(HttpURLConnection.HTTP_BAD_REQUEST).entity(SvcUtil.getErrorMessage("shipId parameter is mandatory")).build());
-		} else if (staticDataProxy.getShip(shipId) == null) {
+		} else if (sd.getShip(shipId) == null) {
 			throw new WebApplicationException(Response.status(HttpURLConnection.HTTP_NOT_FOUND).entity(SvcUtil.getErrorMessage("ship not found")).build());
 		}
 

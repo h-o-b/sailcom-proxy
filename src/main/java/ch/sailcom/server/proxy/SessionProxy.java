@@ -4,17 +4,15 @@ import ch.sailcom.server.dto.User;
 
 public interface SessionProxy {
 
-	boolean isConnected();
-
-	void connect();
+	String getSessionId();
 
 	boolean isLoggedIn();
 
-	boolean login(String userNr, String pwd);
-
-	String getSessionId();
+	boolean login(String user, String pwd);
 
 	User getUser();
+
+	<T> T getProxy(Class<T> proxyClass);
 
 	void logout();
 

@@ -101,7 +101,7 @@ public class BookingProxyImpl implements BookingProxy {
 
 			Trip trip = new Trip();
 			String fullName = shipCell.text().replace(", ", "@");
-			Ship ship = staticDataProxy.getShip(fullName);
+			Ship ship = staticDataProxy.getStaticData().getShip(fullName);
 			if (ship != null) {
 
 				trip.tripId = idCell.getElementsByTag("a").first().attr("href");

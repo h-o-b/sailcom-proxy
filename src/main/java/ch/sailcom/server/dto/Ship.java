@@ -4,12 +4,11 @@ public class Ship {
 
 	public int id;
 	public String name;
-	public boolean isAvailable;
 
 	public int harborId;
 	public int lakeId;
 
-	public boolean hasImg;
+	public boolean hasImg = false;
 	public String plate;
 	public String type;
 	public String location;

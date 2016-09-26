@@ -39,12 +39,14 @@ public class SessionSvc {
 			throw new WebApplicationException(Response.status(HttpURLConnection.HTTP_BAD_REQUEST).entity(SvcUtil.getErrorMessage("pwd parameter is mandatory")).build());
 		}
 
-		LOGGER.info("login.initSessionProxy {}", user);
-		SessionProxy session = SvcUtil.initSessionProxy(request);
+		SessionProxy session = SvcUtil.getSessionProxy(request);
+		if (session == null) {
+			LOGGER.info("login.initSessionProxy {}", user);
+			session = SvcUtil.initSessionProxy(request);
+		}
 
-		if (!session.isConnected()) {
-			LOGGER.info("login.connect {}", user);
-			session.connect();
+		if (session.isLoggedIn()) {
+			return new SessionInfo(session.getSessionId(), session.getUser());
 		}
 
 		LOGGER.info("User {} logging in ...", user);

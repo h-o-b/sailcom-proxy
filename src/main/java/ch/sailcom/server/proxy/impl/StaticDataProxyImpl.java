@@ -2,7 +2,6 @@ package ch.sailcom.server.proxy.impl;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.jsoup.Jsoup;
@@ -26,21 +25,27 @@ public class StaticDataProxyImpl implements StaticDataProxy {
 	private static final String STATIC_DATA_URL = "http://www.sailcomnet.ch/liste.php";
 	private static final String MAIN_DIV = "Hauptteil";
 
-	private static final String MY_SHIPS_URL = "https://www.sailcomnet.ch/net/res_neu.php";
-
 	private static StaticData staticData = null;
 
-	private static StaticData getStaticData() throws IOException {
+	private static void loadStaticData() {
 
-		LOGGER.info("getStaticData.1");
-		Document doc = Jsoup.parse(new URL(STATIC_DATA_URL).openStream(), "ISO-8859-1", STATIC_DATA_URL);
-		LOGGER.info("getStaticData.2");
+		if (staticData != null) {
+			return;
+		}
+
+		LOGGER.info("loadStaticData.1");
+		Document doc;
+		try {
+			doc = Jsoup.parse(new URL(STATIC_DATA_URL).openStream(), "ISO-8859-1", STATIC_DATA_URL);
+		} catch (IOException e) {
+			LOGGER.error("Static data url crashed", e);
+			throw new RuntimeException("Static data url crashed", e);
+		}
+		LOGGER.info("loadStaticData.2");
 
 		Element main = doc.select("div#" + MAIN_DIV).first();
 		Element tab = main.select("table").first();
 		Elements rows = tab.select("tr");
-
-		StaticData sd = new StaticData();
 
 		// @formatter:off
 		/*
@@ -80,6 +85,8 @@ public class StaticDataProxyImpl implements StaticDataProxy {
 		 */
 		// @formatter:on
 
+		staticData = new StaticData();
+
 		// Skip Header Row
 		for (int i = 1; i < rows.size(); i++) {
 
@@ -111,17 +118,17 @@ public class StaticDataProxyImpl implements StaticDataProxy {
 			ship.harborId = Integer.parseInt(c.select("a").first().attr("href").split("=")[1]);
 
 			/* Get/Add Harbor */
-			harbor = sd.harborsById.get(ship.harborId);
+			harbor = staticData.getHarbor(ship.harborId);
 			if (harbor != null) {
-				lake = sd.lakesById.get(harbor.lakeId);
+				lake = staticData.getLake(harbor.lakeId);
 			} else {
 				/* Get/Add Lake */
 				String lakeName = tn.get(0).text();
-				lake = sd.lakesByName.get(lakeName);
+				lake = staticData.getLake(lakeName);
 				if (lake == null) {
-					lake = sd.addLake(lakeName);
+					lake = staticData.addLake(lakeName);
 				}
-				harbor = sd.addHarbor(ship.harborId, c.select("a").first().text(), lake.id);
+				harbor = staticData.addHarbor(ship.harborId, c.select("a").first().text(), lake.id);
 			}
 
 			ship.lakeId = lake.id;
@@ -135,93 +142,16 @@ public class StaticDataProxyImpl implements StaticDataProxy {
 			ship.sailSize = tn.get(1).getWholeText().trim();
 			ship.length = tn.get(2).getWholeText().substring(3).trim();
 
-			sd.addShip(ship);
+			staticData.addShip(ship);
 		}
-		LOGGER.info("getStaticData.3");
-
-		return sd;
+		LOGGER.info("loadStaticData.3");
 
 	}
 
-	private static List<Integer> getAvailableShips() throws IOException {
-
-		List<Integer> ships = new ArrayList<Integer>();
-
-		// @formatter:off
-		/*
-		 * https://www.sailcomnet.ch/net/res_neu.php
-		 * 
-		 * <...>
-		 *   <form method="post" action="/net/res_neu.php" name="form1">
-		 *     <table cellpadding="3" cellspacing="0" style="border-collapse: collapse;" >
-		 *       <tr>
-		 *         <td colspan="2">Bitte beachte: Auf der untenstehenden Liste erscheinen nur diejenigen Boote, die Du eingesegelt hast und welche zur Zeit zur Verfügung stehen (nicht ausgewassert).</td>
-		 *       </tr>
-		 *       <tr>
-		 *         <td><b>Boot:</b></td>
-		 *         <td>
-		 *           <select size="1" name="boot" onChange='searchSuggest();'>
-		 *             <option value='112' selected>Vierwaldstättersee, Brunnen - Föhnhafen, Albin Viggen</option>
-		 *           </select>
-		 *         </td>
-		 *       </tr>
-		 */
-		// @formatter:on
-
-		LOGGER.info("getAvailableShips.1");
-		String url = MY_SHIPS_URL;
-		Document doc = Jsoup.connect(url).get();
-		LOGGER.info("getAvailableShips.2");
-
-		if (doc.select("input[name=txtMitgliedernummer]").first() != null) {
-			throw new NoSessionException();
-		}
-
-		// Loop ship options
-		Element select = doc.select("select[name=boot]").first();
-		Elements shipOptions = select.select("option");
-		for (int s = 0; s < shipOptions.size(); s++) {
-			Element ship = shipOptions.get(s);
-			int shipId = Integer.parseInt(ship.attr("value"));
-			ships.add(shipId);
-		}
-
-		return ships;
-
-	}
-
-	private static synchronized void loadStaticData() {
-
-		if (staticData != null) {
-			return;
-		}
-
-		LOGGER.info("Loading static data ...");
-		try {
-			staticData = getStaticData();
-			LOGGER.info("Loading static data 1");
-			List<Integer> myShips = getAvailableShips();
-			LOGGER.info("Loading static data 2");
-			for (Integer shipId : myShips) {
-				Ship ship = staticData.shipsById.get(shipId);
-				staticData.myShips.add(ship);
-				ship.isAvailable = true;
-				Harbor harbor = staticData.harborsById.get(ship.harborId);
-				if (!staticData.myHarbors.contains(harbor)) {
-					staticData.myHarbors.add(harbor);
-					harbor.isAvailable = true;
-					Lake lake = staticData.lakesById.get(harbor.lakeId);
-					if (!staticData.myLakes.contains(lake)) {
-						staticData.myLakes.add(lake);
-						lake.isAvailable = true;
-					}
-				}
-			}
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
-		LOGGER.info("Loading static data done");
-
+	@Override
+	public StaticData getStaticData() {
+		loadStaticData();
+		return staticData;
 	}
 
 	@Override
@@ -231,15 +161,9 @@ public class StaticDataProxyImpl implements StaticDataProxy {
 	}
 
 	@Override
-	public List<Lake> getMyLakes() {
-		loadStaticData();
-		return staticData.myLakes;
-	}
-
-	@Override
 	public Lake getLake(int lakeId) {
 		loadStaticData();
-		return staticData.lakesById.get(lakeId);
+		return staticData.getLake(lakeId);
 	}
 
 	@Override
@@ -249,40 +173,21 @@ public class StaticDataProxyImpl implements StaticDataProxy {
 	}
 
 	@Override
-	public List<Harbor> getMyHarbors() {
-		loadStaticData();
-		return staticData.myHarbors;
-	}
-
-	@Override
 	public Harbor getHarbor(int harborId) {
 		loadStaticData();
-		return staticData.harborsById.get(harborId);
+		return staticData.getHarbor(harborId);
 	}
 
 	@Override
 	public List<Ship> getShips() {
 		loadStaticData();
-		this.getMyShips();
 		return staticData.ships;
-	}
-
-	@Override
-	public List<Ship> getMyShips() {
-		loadStaticData();
-		return staticData.myShips;
 	}
 
 	@Override
 	public Ship getShip(int shipId) {
 		loadStaticData();
-		return staticData.shipsById.get(shipId);
-	}
-
-	@Override
-	public Ship getShip(String shipName) {
-		loadStaticData();
-		return staticData.shipsByName.get(shipName);
+		return staticData.getShip(shipId);
 	}
 
 }
