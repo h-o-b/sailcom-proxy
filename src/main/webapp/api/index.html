@@ -69,7 +69,6 @@
 						<td>Lakes</td>
 						<td>
 							<a href="#" ng-click="execRequest('lakes')">All Lakes</a>,
-							<a href="#" ng-click="execRequest('lakes/my')">My Lakes</a>,
 							<a href="#" ng-click="execRequest('lakes/1')">Lake 1</a>
 						</td>
 					</tr>
@@ -77,7 +76,6 @@
 						<td>Harbors</td>
 						<td>
 							<a href="#" ng-click="execRequest('harbors')">All Harbors</a>,
-							<a href="#" ng-click="execRequest('harbors/my')">My Harbors</a>,
 							<a href="#" ng-click="execRequest('harbors/14')">Harbor 14 (La Neuveville)</a>
 						</td>
 					</tr>
@@ -85,8 +83,35 @@
 						<td>Ships</td>
 						<td>
 							<a href="#" ng-click="execRequest('ships')">All Ships</a>,
-							<a href="#" ng-click="execRequest('ships/my')">My Ships</a>,
 							<a href="#" ng-click="execRequest('ships/147')">Ship 147</a>
+						</td>
+					</tr>
+
+					<tr>
+						<td colspan="2"><h2>User Data</h2></td>
+					</tr>
+					<tr>
+						<td>User</td>
+						<td>
+							<a href="#" ng-click="execRequest('user')">User</a>,
+							<a href="#" ng-click="execRequest('user/info')">User Info</a>
+						</td>
+					</tr>
+					<tr>
+						<td>Available</td>
+						<td>
+							<a href="#" ng-click="execRequest('user/lakes')">Lakes</a>,
+							<a href="#" ng-click="execRequest('user/harbors')">Harbors</a>,
+							<a href="#" ng-click="execRequest('user/ships')">Ships</a>
+						</td>
+					</tr>
+					<tr>
+						<td>Favorites</td>
+						<td>
+							<a href="#" ng-click="execRequest('user/like/147')">Like 147</a>,
+							<a href="#" ng-click="execRequest('user/like/14')">Like 14</a>,
+							<a href="#" ng-click="execRequest('user/unlike/147')">Unlike 147</a>,
+							<a href="#" ng-click="execRequest('user/unlike/14')">Unlike 14</a>
 						</td>
 					</tr>
 

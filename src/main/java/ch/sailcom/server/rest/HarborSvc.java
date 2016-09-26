@@ -13,8 +13,7 @@ import javax.ws.rs.core.MediaType;
 
 import ch.sailcom.server.dto.Harbor;
 import ch.sailcom.server.proxy.StaticDataProxy;
-import ch.sailcom.server.proxy.UserDataProxy;
-import ch.sailcom.server.rest.filter.Authenticated;
+import ch.sailcom.server.rest.util.Authenticated;
 
 /**
  * Harbor Service
@@ -23,23 +22,19 @@ import ch.sailcom.server.rest.filter.Authenticated;
 @Authenticated
 public class HarborSvc {
 
-	@GET
-	@Produces(MediaType.APPLICATION_JSON)
-	public List<Harbor> getAllHarbors(@Context HttpServletRequest request) throws IOException {
-		return SvcUtil.getSessionProxy(request).getProxy(StaticDataProxy.class).getHarbors();
-	}
+	@Context
+	HttpServletRequest request;
 
 	@GET
-	@Path("/my")
 	@Produces(MediaType.APPLICATION_JSON)
-	public List<Harbor> getMyHarbors(@Context HttpServletRequest request) throws IOException {
-		return SvcUtil.getSessionProxy(request).getProxy(UserDataProxy.class).getMyHarbors();
+	public List<Harbor> getAllHarbors() throws IOException {
+		return SvcUtil.getSessionProxy(request).getProxy(StaticDataProxy.class).getHarbors();
 	}
 
 	@GET
 	@Path("/{harborId}")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Harbor getHarbor(@Context HttpServletRequest request, @PathParam("harborId") Integer harborId) throws IOException {
+	public Harbor getHarbor(@PathParam("harborId") Integer harborId) throws IOException {
 		return SvcUtil.getSessionProxy(request).getProxy(StaticDataProxy.class).getHarbor(harborId);
 	}
 

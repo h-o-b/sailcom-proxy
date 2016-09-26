@@ -12,7 +12,7 @@ import javax.ws.rs.core.MediaType;
 
 import ch.sailcom.server.dto.Trip;
 import ch.sailcom.server.proxy.BookingProxy;
-import ch.sailcom.server.rest.filter.Authenticated;
+import ch.sailcom.server.rest.util.Authenticated;
 
 /**
  * Trip Service
@@ -21,9 +21,12 @@ import ch.sailcom.server.rest.filter.Authenticated;
 @Authenticated
 public class TripSvc {
 
+	@Context
+	HttpServletRequest request;
+
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public List<Trip> getMyTrips(@Context HttpServletRequest request) throws IOException {
+	public List<Trip> getMyTrips() throws IOException {
 		return SvcUtil.getSessionProxy(request).getProxy(BookingProxy.class).getTrips();
 	}
 

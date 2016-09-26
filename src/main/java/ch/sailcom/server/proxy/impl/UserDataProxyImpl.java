@@ -11,11 +11,10 @@ import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ch.sailcom.server.dto.Harbor;
-import ch.sailcom.server.dto.Lake;
-import ch.sailcom.server.dto.Ship;
 import ch.sailcom.server.dto.StaticData;
+import ch.sailcom.server.dto.User;
 import ch.sailcom.server.dto.UserData;
+import ch.sailcom.server.dto.UserInfo;
 import ch.sailcom.server.proxy.UserDataProxy;
 
 public class UserDataProxyImpl implements UserDataProxy {
@@ -25,12 +24,12 @@ public class UserDataProxyImpl implements UserDataProxy {
 	private static final String MY_SHIPS_URL = "https://www.sailcomnet.ch/net/res_neu.php";
 
 	private final StaticData staticData;
-	// private final User user;
+	private final User user;
 	private UserData userData = null;
 
-	public UserDataProxyImpl(StaticData staticData/* , User user */) {
+	public UserDataProxyImpl(StaticData staticData, User user) {
 		this.staticData = staticData;
-		// this.user = user;
+		this.user = user;
 	}
 
 	private List<Integer> getAvailableShips() throws IOException {
@@ -86,7 +85,7 @@ public class UserDataProxyImpl implements UserDataProxy {
 			return;
 		}
 
-		this.userData = new UserData(this.staticData/* , this.getUser() */);
+		this.userData = new UserData(this.staticData, this.getUser());
 
 		LOGGER.info("loadUserData.1");
 		try {
@@ -102,10 +101,15 @@ public class UserDataProxyImpl implements UserDataProxy {
 
 	}
 
-	// @Override
-	// public User getUser() {
-	// return user;
-	// }
+	@Override
+	public User getUser() {
+		return user;
+	}
+
+	@Override
+	public UserInfo getUserInfo() {
+		return this.getUserData().getUserInfo();
+	}
 
 	@Override
 	public UserData getUserData() {
@@ -114,21 +118,21 @@ public class UserDataProxyImpl implements UserDataProxy {
 	}
 
 	@Override
-	public List<Lake> getMyLakes() {
+	public List<Integer> getLakes() {
 		loadUserData();
-		return userData.lakes;
+		return new ArrayList<Integer>(userData.availableLakesById.keySet());
 	}
 
 	@Override
-	public List<Harbor> getMyHarbors() {
+	public List<Integer> getHarbors() {
 		loadUserData();
-		return userData.harbors;
+		return new ArrayList<Integer>(userData.availableHarborsById.keySet());
 	}
 
 	@Override
-	public List<Ship> getMyShips() {
+	public List<Integer> getShips() {
 		loadUserData();
-		return userData.ships;
+		return new ArrayList<Integer>(userData.availableShipsById.keySet());
 	}
 
 }

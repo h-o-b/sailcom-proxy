@@ -14,7 +14,7 @@ import javax.ws.rs.core.MediaType;
 
 import ch.sailcom.server.dto.WeatherInfo;
 import ch.sailcom.server.proxy.WeatherProxy;
-import ch.sailcom.server.rest.filter.Authenticated;
+import ch.sailcom.server.rest.util.Authenticated;
 
 /**
  * Weather Service
@@ -23,10 +23,13 @@ import ch.sailcom.server.rest.filter.Authenticated;
 @Authenticated
 public class WeatherSvc {
 
+	@Context
+	HttpServletRequest request;
+
 	@GET
 	@Path("/{harborId}")
 	@Produces(MediaType.APPLICATION_JSON)
-	public List<WeatherInfo> getWeatherInfo(@Context HttpServletRequest request, @PathParam("harborId") Integer harborId, @QueryParam("det") Boolean isDet) throws IOException {
+	public List<WeatherInfo> getWeatherInfo(@PathParam("harborId") Integer harborId, @QueryParam("det") Boolean isDet) throws IOException {
 		return SvcUtil.getSessionProxy(request).getProxy(WeatherProxy.class).getWeatherInfo(harborId, isDet == null ? false : isDet);
 	}
 

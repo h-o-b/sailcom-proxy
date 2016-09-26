@@ -1,4 +1,4 @@
-package ch.sailcom.server.rest.filter;
+package ch.sailcom.server.rest.util;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

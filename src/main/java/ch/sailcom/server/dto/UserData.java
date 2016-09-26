@@ -8,50 +8,54 @@ import java.util.Map;
 public class UserData {
 
 	private final StaticData staticData;
-	// private final User user;
+	private final User user;
 
-	public List<Lake> lakes = new ArrayList<Lake>();
-	public Map<Integer, Lake> lakesById = new HashMap<Integer, Lake>();
+	public Map<Integer, Lake> availableLakesById = new HashMap<Integer, Lake>();
 
-	public List<Harbor> harbors = new ArrayList<Harbor>();
-	public Map<Integer, Harbor> harborsById = new HashMap<Integer, Harbor>();
+	public Map<Integer, Harbor> availableHarborsById = new HashMap<Integer, Harbor>();
 
-	public List<Ship> ships = new ArrayList<Ship>();
-	public Map<Integer, Ship> shipsById = new HashMap<Integer, Ship>();
+	public Map<Integer, Ship> availableShipsById = new HashMap<Integer, Ship>();
+	public Map<Integer, Ship> favoriteShipsById = new HashMap<Integer, Ship>();
 
-	public UserData(StaticData staticData/* , User user */) {
+	public UserData(StaticData staticData, User user) {
 		this.staticData = staticData;
-		// this.user = user;
+		this.user = user;
 	}
 
-	// public User getUser() {
-	// return this.user;
-	// }
+	public User getUser() {
+		return this.user;
+	}
+
+	public UserInfo getUserInfo() {
+		UserInfo userInfo = new UserInfo();
+		userInfo.availableLakes = new ArrayList<Integer>(this.availableLakesById.keySet());
+		userInfo.availableHarbors = new ArrayList<Integer>(this.availableHarborsById.keySet());
+		userInfo.availableShips = new ArrayList<Integer>(this.availableShipsById.keySet());
+		userInfo.favoriteShips = new ArrayList<Integer>(this.favoriteShipsById.keySet());
+		return userInfo;
+	}
 
 	public void addShip(int shipId) {
 		Ship ship = this.staticData.getShip(shipId);
-		this.ships.add(ship);
-		this.shipsById.put(shipId, ship);
+		this.availableShipsById.put(shipId, ship);
 		Harbor harbor = this.staticData.getHarbor(ship.harborId);
-		if (!this.harbors.contains(harbor)) {
-			this.harbors.add(harbor);
-			this.harborsById.put(harbor.id, harbor);
+		if (!this.availableHarborsById.containsKey(harbor.id)) {
+			this.availableHarborsById.put(harbor.id, harbor);
 			Lake lake = this.staticData.getLake(harbor.lakeId);
-			if (!this.lakes.contains(lake)) {
-				this.lakes.add(lake);
-				this.lakesById.put(lake.id, lake);
+			if (!this.availableLakesById.containsKey(lake.id)) {
+				this.availableLakesById.put(lake.id, lake);
 			}
 		}
 	}
 
-	public Ship like(Ship ship) {
-		// this.staticData.shipsById.get(shipId).isFavorite = true;
-		return ship;
+	public List<Integer> like(Ship ship) {
+		this.favoriteShipsById.put(ship.id, ship);
+		return new ArrayList<Integer>(this.favoriteShipsById.keySet());
 	}
 
-	public Ship unlike(Ship ship) {
-		// this.staticData.shipsById.get(shipId).isFavorite = false;
-		return ship;
+	public List<Integer> unlike(Ship ship) {
+		this.favoriteShipsById.remove(ship.id);
+		return new ArrayList<Integer>(this.favoriteShipsById.keySet());
 	}
 
 }

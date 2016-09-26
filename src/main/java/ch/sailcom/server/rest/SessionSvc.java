@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
 import ch.sailcom.server.dto.SessionInfo;
 import ch.sailcom.server.proxy.SessionProxy;
 import ch.sailcom.server.proxy.impl.NoSessionException;
-import ch.sailcom.server.rest.filter.Authenticated;
+import ch.sailcom.server.rest.util.Authenticated;
 
 /**
  * Sailcom SessionProxy Service
@@ -29,10 +29,13 @@ public class SessionSvc {
 
 	private static Logger LOGGER = LoggerFactory.getLogger(SessionSvc.class);
 
+	@Context
+	HttpServletRequest request;
+
 	@GET
 	@Path("/login")
 	@Produces(MediaType.APPLICATION_JSON)
-	public SessionInfo login(@Context HttpServletRequest request, @QueryParam("user") String user, @QueryParam("pwd") String pwd) throws IOException {
+	public SessionInfo login(@QueryParam("user") String user, @QueryParam("pwd") String pwd) throws IOException {
 
 		if (user == null) {
 			throw new WebApplicationException(Response.status(HttpURLConnection.HTTP_BAD_REQUEST).entity(SvcUtil.getErrorMessage("user parameter is mandatory")).build());
@@ -65,7 +68,7 @@ public class SessionSvc {
 	@Path("/logout")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Authenticated
-	public void logout(@Context HttpServletRequest request) throws IOException {
+	public void logout() throws IOException {
 
 		SessionProxy session = SvcUtil.getSessionProxy(request);
 

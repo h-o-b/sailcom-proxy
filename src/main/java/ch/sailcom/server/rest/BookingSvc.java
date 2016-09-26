@@ -23,7 +23,7 @@ import ch.sailcom.server.dto.Booking;
 import ch.sailcom.server.dto.StaticData;
 import ch.sailcom.server.proxy.BookingProxy;
 import ch.sailcom.server.proxy.StaticDataProxy;
-import ch.sailcom.server.rest.filter.Authenticated;
+import ch.sailcom.server.rest.util.Authenticated;
 
 /**
  * Bookings Service
@@ -34,10 +34,12 @@ public class BookingSvc {
 
 	private DateFormat df = new SimpleDateFormat("dd.MM.yyyy");
 
+	@Context
+	HttpServletRequest request;
+
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public List<Booking> getBookings(@Context HttpServletRequest request, @QueryParam("shipId") Integer shipId, @QueryParam("date") String date, @QueryParam("nofWeeks") Integer nofWeeks)
-			throws IOException {
+	public List<Booking> getBookings(@QueryParam("shipId") Integer shipId, @QueryParam("date") String date, @QueryParam("nofWeeks") Integer nofWeeks) throws IOException {
 
 		StaticData sd = SvcUtil.getSessionProxy(request).getProxy(StaticDataProxy.class).getStaticData();
 		BookingProxy bookingProxy = SvcUtil.getSessionProxy(request).getProxy(BookingProxy.class);

@@ -152,7 +152,7 @@ public class SessionProxyImpl implements SessionProxy {
 				user.ip = user.ip.substring(4, user.ip.length() - 1);
 
 				this.proxyMap.put(StaticDataProxy.class, new StaticDataProxyImpl());
-				this.proxyMap.put(UserDataProxy.class, new UserDataProxyImpl(getProxy(StaticDataProxy.class).getStaticData()));
+				this.proxyMap.put(UserDataProxy.class, new UserDataProxyImpl(getProxy(StaticDataProxy.class).getStaticData(), user));
 				this.proxyMap.put(BookingProxy.class, new BookingProxyImpl());
 				this.proxyMap.put(WeatherProxy.class, new WeatherProxyImpl());
 

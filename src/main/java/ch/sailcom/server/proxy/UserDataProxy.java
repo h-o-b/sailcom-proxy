@@ -2,21 +2,22 @@ package ch.sailcom.server.proxy;
 
 import java.util.List;
 
-import ch.sailcom.server.dto.Harbor;
-import ch.sailcom.server.dto.Lake;
-import ch.sailcom.server.dto.Ship;
+import ch.sailcom.server.dto.User;
 import ch.sailcom.server.dto.UserData;
+import ch.sailcom.server.dto.UserInfo;
 
 public interface UserDataProxy {
 
-	// User getUser();
+	User getUser();
+
+	UserInfo getUserInfo();
 
 	UserData getUserData();
 
-	List<Lake> getMyLakes();
+	List<Integer> getLakes();
 
-	List<Harbor> getMyHarbors();
+	List<Integer> getHarbors();
 
-	List<Ship> getMyShips();
+	List<Integer> getShips();
 
 }
