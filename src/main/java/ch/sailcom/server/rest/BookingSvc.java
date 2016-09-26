@@ -9,13 +9,12 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
+import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -34,15 +33,17 @@ public class BookingSvc {
 
 	private DateFormat df = new SimpleDateFormat("dd.MM.yyyy");
 
-	@Context
-	HttpServletRequest request;
+	@Inject
+	StaticDataProxy staticDataProxy;
+
+	@Inject
+	BookingProxy bookingProxy;
 
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public List<Booking> getBookings(@QueryParam("shipId") Integer shipId, @QueryParam("date") String date, @QueryParam("nofWeeks") Integer nofWeeks) throws IOException {
 
-		StaticData sd = SvcUtil.getSessionProxy(request).getProxy(StaticDataProxy.class).getStaticData();
-		BookingProxy bookingProxy = SvcUtil.getSessionProxy(request).getProxy(BookingProxy.class);
+		StaticData sd = staticDataProxy.getStaticData();
 
 		/* Validate Service Input */
 		if (shipId == null) {
