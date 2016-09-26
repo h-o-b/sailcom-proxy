@@ -16,6 +16,7 @@ public class UserData {
 
 	public Map<Integer, Ship> availableShipsById = new HashMap<Integer, Ship>();
 	public Map<Integer, Ship> favoriteShipsById = new HashMap<Integer, Ship>();
+	public Map<Integer, Integer> starredShipsById = new HashMap<Integer, Integer>();
 
 	public UserData(StaticData staticData, User user) {
 		this.staticData = staticData;
@@ -32,6 +33,7 @@ public class UserData {
 		userInfo.availableHarbors = new ArrayList<Integer>(this.availableHarborsById.keySet());
 		userInfo.availableShips = new ArrayList<Integer>(this.availableShipsById.keySet());
 		userInfo.favoriteShips = new ArrayList<Integer>(this.favoriteShipsById.keySet());
+		userInfo.starredShips = new HashMap<Integer, Integer>(this.starredShipsById);
 		return userInfo;
 	}
 
@@ -56,6 +58,15 @@ public class UserData {
 	public List<Integer> unlike(Ship ship) {
 		this.favoriteShipsById.remove(ship.id);
 		return new ArrayList<Integer>(this.favoriteShipsById.keySet());
+	}
+
+	public Map<Integer, Integer> rate(Ship ship, int starCount) {
+		if (starCount > 0) {
+			this.starredShipsById.put(ship.id, starCount);
+		} else {
+			this.starredShipsById.remove(ship.id);
+		}
+		return this.starredShipsById;
 	}
 
 }

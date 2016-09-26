@@ -108,10 +108,18 @@
 					<tr>
 						<td>Favorites</td>
 						<td>
-							<a href="#" ng-click="execRequest('user/like/147')">Like 147</a>,
-							<a href="#" ng-click="execRequest('user/like/14')">Like 14</a>,
-							<a href="#" ng-click="execRequest('user/unlike/147')">Unlike 147</a>,
-							<a href="#" ng-click="execRequest('user/unlike/14')">Unlike 14</a>
+							<a href="#" ng-click="execRequest('user/ships/147/like')">Like 147</a>,
+							<a href="#" ng-click="execRequest('user/ships/14/like')">Like 14</a>,
+							<a href="#" ng-click="execRequest('user/ships/147/unlike')">Unlike 147</a>,
+							<a href="#" ng-click="execRequest('user/ships/14/unlike')">Unlike 14</a>
+						</td>
+					</tr>
+					<tr>
+						<td>Rating</td>
+						<td>
+							<a href="#" ng-click="execRequest('user/ships/147/rate/2')">Rate 147 @ 2</a>,
+							<a href="#" ng-click="execRequest('user/ships/147/rate/4')">Rate 147 @ 4</a>,
+							<a href="#" ng-click="execRequest('user/ships/147/rate/0')">Unrate 147</a>,
 						</td>
 					</tr>
 
