@@ -67,22 +67,22 @@ public class SessionProxyImpl implements SessionProxy {
 		/* Fetch SessionInfo Cookie */
 		try {
 
-			LOGGER.info("connect.1");
+			LOGGER.debug("connect.1");
 			URL loginPage = new URL(LOGIN_FORM_URL);
 			HttpsURLConnection loginConnection = (HttpsURLConnection) loginPage.openConnection();
 			loginConnection.connect();
 			loginConnection.getContent();
 
-			LOGGER.info("connect.2");
+			LOGGER.debug("connect.2");
 			List<HttpCookie> cookies = cookieStore.getCookies();
 			for (HttpCookie cookie : cookies) {
-				LOGGER.info("connect.cookie: " + cookie.getName());
+				LOGGER.debug("connect.cookie: " + cookie.getName());
 				if (cookie.getName().equals(SERVER_SESSION_COOKIE)) {
 					sessionCookie = cookie;
 				}
 			}
 
-			LOGGER.info("connect.3");
+			LOGGER.debug("connect.3");
 
 		} catch (IOException e) {
 			LOGGER.error("connect crashed", e);
@@ -107,7 +107,7 @@ public class SessionProxyImpl implements SessionProxy {
 
 		try {
 
-			LOGGER.info("logon.1");
+			LOGGER.debug("login.1");
 			URL loginForm = new URL(LOGIN_FORM_URL);
 			HttpsURLConnection loginFormConnection = (HttpsURLConnection) loginForm.openConnection();
 
@@ -124,16 +124,16 @@ public class SessionProxyImpl implements SessionProxy {
 
 			int responseCode = loginFormConnection.getResponseCode();
 
-			LOGGER.info("logon.2: " + responseCode);
+			LOGGER.debug("login.2: " + responseCode);
 			if (responseCode == HttpServletResponse.SC_MOVED_TEMPORARILY) {
 
 				String redirectUrl = loginFormConnection.getHeaderField("Location");
-				LOGGER.info("logon.3: " + redirectUrl);
+				LOGGER.debug("logon.3: " + redirectUrl);
 				if (redirectUrl.startsWith("error.php")) {
 					return false;
 				}
 
-				LOGGER.info("logon.3");
+				LOGGER.debug("login.3");
 				Document doc = Jsoup.connect(LOGIN_INFO_URL).get();
 
 				// <div id="login">&nbsp;<b>82219 - Hannes Brunner</b>&nbsp;&nbsp;&nbsp;(IP: 81.221.99.86)</div>
@@ -142,6 +142,7 @@ public class SessionProxyImpl implements SessionProxy {
 					return false;
 				}
 
+				LOGGER.debug("login.4");
 				String userInfo = loginInfo.html();
 				userInfo = userInfo.substring(userInfo.indexOf("<b>") + 3);
 				userInfo = userInfo.substring(0, userInfo.indexOf("</b>"));
@@ -159,7 +160,7 @@ public class SessionProxyImpl implements SessionProxy {
 				this.proxyMap.put(BookingProxy.class, new BookingProxyImpl());
 				this.proxyMap.put(WeatherProxy.class, new WeatherProxyImpl());
 
-				LOGGER.info("logon.4");
+				LOGGER.info("login.5");
 				return true;
 
 			}

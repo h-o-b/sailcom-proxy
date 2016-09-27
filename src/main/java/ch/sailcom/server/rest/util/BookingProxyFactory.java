@@ -11,7 +11,6 @@ import org.glassfish.hk2.api.Factory;
 
 import ch.sailcom.server.proxy.BookingProxy;
 import ch.sailcom.server.proxy.SessionProxy;
-import ch.sailcom.server.rest.SvcUtil;
 
 public class BookingProxyFactory implements Factory<BookingProxy> {
 
@@ -26,7 +25,7 @@ public class BookingProxyFactory implements Factory<BookingProxy> {
 	public BookingProxy provide() {
 		SessionProxy session = SvcUtil.getSessionProxy(request);
 		if (session == null) {
-			throw new WebApplicationException(Response.status(HttpURLConnection.HTTP_UNAUTHORIZED).entity(SvcUtil.getErrorMessage("no server session")).build());
+			throw new WebApplicationException(Response.status(HttpURLConnection.HTTP_UNAUTHORIZED).entity(SvcUtil.getErrorEntity("no server session")).build());
 		}
 		return session.getProxy(BookingProxy.class);
 	}

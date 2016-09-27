@@ -29,7 +29,8 @@ public class UserDataProxyImpl implements UserDataProxy {
 	private static Logger LOGGER = LoggerFactory.getLogger(UserDataProxyImpl.class);
 
 	private static final String MY_SHIPS_URL = "https://www.sailcomnet.ch/net/res_neu.php";
-	private static final String DB_FILE = "sailcom-proxy.db";
+	// private static final String DB_FILE = "/volume1/@appstore/Tomcat7/src/webapps/sailcom-proxy/sailcom-proxy.db";
+	private static final String DB_FILE = "d:/data/sailcom/sailcom-proxy.db";
 	private static final String USER_INFO_MAP = "userInfoMap";
 
 	private static DB database;
@@ -42,16 +43,11 @@ public class UserDataProxyImpl implements UserDataProxy {
 	@SuppressWarnings("unchecked")
 	private void openDatabase() {
 		File dbFile = new File(DB_FILE);
-		LOGGER.info("Opening database file {}", dbFile.getAbsolutePath());
-		database = DBMaker.fileDB(dbFile).closeOnJvmShutdown().make();
-		LOGGER.info("Opening database hashMap {}", USER_INFO_MAP);
+		LOGGER.debug("Opening database file {}", dbFile.getAbsolutePath());
+		database = DBMaker.fileDB(dbFile).transactionEnable().closeOnJvmShutdown().make();
+		LOGGER.debug("Opening database hashMap {}", USER_INFO_MAP);
 		userPrefMap = (ConcurrentMap<String, UserPreference>) database.hashMap(USER_INFO_MAP).createOrOpen();
-		LOGGER.info("Opening database done");
-	}
-
-	private void closeDatabase() {
-		LOGGER.info("Closing database");
-		database.close();
+		LOGGER.debug("Opening database done");
 	}
 
 	public UserDataProxyImpl(StaticData staticData, User user) {
@@ -63,10 +59,10 @@ public class UserDataProxyImpl implements UserDataProxy {
 	}
 
 	public synchronized void updateUserPreference(User user, UserPreference userPreference) {
-		LOGGER.info("Update user info for {} - {}", user.id, user.name);
+		LOGGER.debug("Update user info for {} - {}", user.id, user.name);
 		userPrefMap.put(user.id, userPreference);
 		database.commit();
-		LOGGER.info("Update user info done");
+		LOGGER.debug("Update user info done");
 	}
 
 	private List<Integer> getAvailableShips() throws IOException {
@@ -94,11 +90,11 @@ public class UserDataProxyImpl implements UserDataProxy {
 		 */
 		// @formatter:on
 
-		LOGGER.info("getAvailableShips.1");
+		LOGGER.debug("getAvailableShips.1");
 		String url = MY_SHIPS_URL;
 		Document doc = Jsoup.connect(url).get();
-		LOGGER.info("getAvailableShips.2");
 
+		LOGGER.debug("getAvailableShips.2");
 		if (doc.select("input[name=txtMitgliedernummer]").first() != null) {
 			throw new NoSessionException();
 		}
@@ -124,13 +120,13 @@ public class UserDataProxyImpl implements UserDataProxy {
 
 		this.userData = new UserData(this.staticData, this.getUser());
 
-		LOGGER.info("loadUserData: getAvailableShips");
+		LOGGER.debug("loadUserData: getAvailableShips");
 		try {
 			List<Integer> myShips = getAvailableShips();
 			for (Integer shipId : myShips) {
 				this.userData.addShip(shipId);
 			}
-			LOGGER.info("loadUserData: userPreferences");
+			LOGGER.debug("loadUserData: userPreferences");
 			UserPreference userPref = userPrefMap.get(this.getUser().id);
 			if (userPref != null) {
 				for (Integer id : userPref.favoriteShips) {
@@ -141,7 +137,7 @@ public class UserDataProxyImpl implements UserDataProxy {
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
-		LOGGER.info("loadUserData.3");
+		LOGGER.debug("loadUserData.3");
 
 	}
 

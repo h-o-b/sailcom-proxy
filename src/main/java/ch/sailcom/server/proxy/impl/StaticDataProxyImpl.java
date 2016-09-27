@@ -33,7 +33,7 @@ public class StaticDataProxyImpl implements StaticDataProxy {
 			return;
 		}
 
-		LOGGER.info("loadStaticData.1");
+		LOGGER.debug("loadStaticData.1");
 		Document doc;
 		try {
 			doc = Jsoup.parse(new URL(STATIC_DATA_URL).openStream(), "ISO-8859-1", STATIC_DATA_URL);
@@ -41,7 +41,7 @@ public class StaticDataProxyImpl implements StaticDataProxy {
 			LOGGER.error("Static data url crashed", e);
 			throw new RuntimeException("Static data url crashed", e);
 		}
-		LOGGER.info("loadStaticData.2");
+		LOGGER.debug("loadStaticData.2");
 
 		Element main = doc.select("div#" + MAIN_DIV).first();
 		Element tab = main.select("table").first();
@@ -144,7 +144,7 @@ public class StaticDataProxyImpl implements StaticDataProxy {
 
 			staticData.addShip(ship);
 		}
-		LOGGER.info("loadStaticData.3");
+		LOGGER.debug("loadStaticData.3");
 
 	}
 

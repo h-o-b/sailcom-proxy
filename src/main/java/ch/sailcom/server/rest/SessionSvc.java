@@ -20,6 +20,7 @@ import ch.sailcom.server.dto.SessionInfo;
 import ch.sailcom.server.proxy.SessionProxy;
 import ch.sailcom.server.proxy.impl.NoSessionException;
 import ch.sailcom.server.rest.util.Authenticated;
+import ch.sailcom.server.rest.util.SvcUtil;
 
 /**
  * Sailcom SessionProxy Service
@@ -39,14 +40,14 @@ public class SessionSvc {
 
 		try {
 			if (user == null) {
-				throw new WebApplicationException(Response.status(HttpURLConnection.HTTP_BAD_REQUEST).entity(SvcUtil.getErrorMessage("user parameter is mandatory")).build());
+				throw new WebApplicationException(Response.status(HttpURLConnection.HTTP_BAD_REQUEST).entity(SvcUtil.getErrorEntity("user parameter is mandatory")).build());
 			} else if (pwd == null) {
-				throw new WebApplicationException(Response.status(HttpURLConnection.HTTP_BAD_REQUEST).entity(SvcUtil.getErrorMessage("pwd parameter is mandatory")).build());
+				throw new WebApplicationException(Response.status(HttpURLConnection.HTTP_BAD_REQUEST).entity(SvcUtil.getErrorEntity("pwd parameter is mandatory")).build());
 			}
 
 			SessionProxy session = SvcUtil.getSessionProxy(request);
 			if (session == null) {
-				LOGGER.info("login.initSessionProxy {}", user);
+				LOGGER.debug("login.initSessionProxy {}", user);
 				session = SvcUtil.initSessionProxy(request);
 			}
 
@@ -57,7 +58,7 @@ public class SessionSvc {
 			LOGGER.info("User {} logging in ...", user);
 			if (!session.login(user, pwd)) {
 				LOGGER.info("User {} login failed", user);
-				throw new WebApplicationException(Response.status(HttpURLConnection.HTTP_UNAUTHORIZED).entity(SvcUtil.getErrorMessage("login denied")).build());
+				throw new WebApplicationException(Response.status(HttpURLConnection.HTTP_UNAUTHORIZED).entity(SvcUtil.getErrorEntity("login denied")).build());
 			}
 
 			LOGGER.info("User {} successfully logged in", user);
@@ -84,7 +85,7 @@ public class SessionSvc {
 			}
 		} catch (NoSessionException e) {
 			e.printStackTrace();
-			throw new WebApplicationException(Response.status(HttpURLConnection.HTTP_BAD_REQUEST).entity(SvcUtil.getErrorMessage("logout failed")).build());
+			throw new WebApplicationException(Response.status(HttpURLConnection.HTTP_BAD_REQUEST).entity(SvcUtil.getErrorEntity("logout failed")).build());
 		}
 
 	}

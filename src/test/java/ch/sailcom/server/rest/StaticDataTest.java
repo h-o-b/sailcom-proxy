@@ -46,7 +46,7 @@ public class StaticDataTest extends SailcomTest {
 		List<Lake> lakes = target("lakes").request().get(List.class);
 		assertEquals("17 lakes", 17, lakes.size());
 		Lake lake = target("lakes/2").request().get(Lake.class);
-		assertEquals("lake id", lake.id, 2);
+		assertEquals("lake id", 2, lake.id);
 		assertNotNull("lake name", lake.name);
 	}
 
@@ -55,9 +55,9 @@ public class StaticDataTest extends SailcomTest {
 	public void testHarbors() {
 		List<Harbor> harbors = target("harbors").request().get(List.class);
 		assertEquals("53 harbors", 53, harbors.size());
-		Harbor harbor = target("harbors/2").request().get(Harbor.class);
-		assertEquals("harbor id", harbor.id, 2);
-		assertNotNull("harbor name", harbor.name);
+		Harbor harbor = target("harbors/14").request().get(Harbor.class);
+		assertEquals("harbor id", 14, harbor.id);
+		assertEquals("harbor name", "La Neuveville", harbor.name);
 		assertNotNull("lake id", harbor.lakeId);
 	}
 
@@ -67,9 +67,9 @@ public class StaticDataTest extends SailcomTest {
 		List<Ship> ships = target("ships").request().get(List.class);
 		assertEquals("99 ships", 99, ships.size());
 		Ship ship = target("ships/197").request().get(Ship.class);
-		assertEquals("ship id", ship.id, 197);
-		assertEquals("ship name", ship.name, "mOcean SUI 32");
-		assertNotNull("harbor id", ship.harborId);
+		assertEquals("ship id", 197, ship.id);
+		assertEquals("ship name", "mOcean SUI 32", ship.name);
+		assertEquals("harbor id", 31, ship.harborId);
 		assertNotNull("lake id", ship.lakeId);
 	}
 

@@ -10,7 +10,8 @@
 	</appender>
 
 	<appender name="DAILYFILE" class="org.apache.log4j.DailyRollingFileAppender">
-		<param name="File" value="/volume1/@appstore/Tomcat7/src/logs/sailcom-proxy.log" />
+		<!--param name="File" value="/volume1/@appstore/Tomcat7/src/logs/sailcom-proxy.log" /-->
+		<param name="File" value="d:/data/sailcom/sailcom-proxy.log" />
 		<param name="DatePattern" value=".yyyy-MM-dd" />
 		<layout class="org.apache.log4j.PatternLayout">
 			<param name="ConversionPattern" value="%d{yyyy-MM-dd HH:mm:ss} %-5p %c:%L - %m%n" />

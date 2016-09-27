@@ -23,6 +23,7 @@ import ch.sailcom.server.dto.StaticData;
 import ch.sailcom.server.proxy.BookingProxy;
 import ch.sailcom.server.proxy.StaticDataProxy;
 import ch.sailcom.server.rest.util.Authenticated;
+import ch.sailcom.server.rest.util.SvcUtil;
 
 /**
  * Bookings Service
@@ -47,9 +48,9 @@ public class BookingSvc {
 
 		/* Validate Service Input */
 		if (shipId == null) {
-			throw new WebApplicationException(Response.status(HttpURLConnection.HTTP_BAD_REQUEST).entity(SvcUtil.getErrorMessage("shipId parameter is mandatory")).build());
+			throw new WebApplicationException(Response.status(HttpURLConnection.HTTP_BAD_REQUEST).entity(SvcUtil.getErrorEntity("shipId parameter is mandatory")).build());
 		} else if (sd.getShip(shipId) == null) {
-			throw new WebApplicationException(Response.status(HttpURLConnection.HTTP_NOT_FOUND).entity(SvcUtil.getErrorMessage("ship not found")).build());
+			throw new WebApplicationException(Response.status(HttpURLConnection.HTTP_NOT_FOUND).entity(SvcUtil.getErrorEntity("ship not found")).build());
 		}
 
 		nofWeeks = nofWeeks == null ? 1 : nofWeeks;

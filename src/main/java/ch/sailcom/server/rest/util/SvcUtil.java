@@ -1,4 +1,4 @@
-package ch.sailcom.server.rest;
+package ch.sailcom.server.rest.util;
 
 import java.net.HttpURLConnection;
 
@@ -7,15 +7,10 @@ import javax.servlet.http.HttpSession;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import ch.sailcom.server.proxy.SessionProxy;
 import ch.sailcom.server.proxy.impl.SessionProxyImpl;
 
 public class SvcUtil {
-
-	private static Logger LOGGER = LoggerFactory.getLogger(SvcUtil.class);
 
 	private static final String SESSION = "sailcomSession";
 
@@ -33,18 +28,16 @@ public class SvcUtil {
 		return (SessionProxy) clientSession.getAttribute(SESSION);
 	}
 
-	public static SessionProxy ensureSessionProxy(HttpServletRequest request) {
-		HttpSession clientSession = request.getSession(true);
-		SessionProxy serverSession = (SessionProxy) clientSession.getAttribute(SESSION);
+	public static void ensureSessionProxy(HttpServletRequest request) {
+		SessionProxy serverSession = SvcUtil.getSessionProxy(request);
 		if (serverSession == null) {
-			throw new WebApplicationException(Response.status(HttpURLConnection.HTTP_UNAUTHORIZED).entity(SvcUtil.getErrorMessage("no server session")).build());
+			throw new WebApplicationException(Response.status(HttpURLConnection.HTTP_UNAUTHORIZED).entity(SvcUtil.getErrorEntity("no server session")).build());
 		} else if (!serverSession.isLoggedIn()) {
-			throw new WebApplicationException(Response.status(HttpURLConnection.HTTP_UNAUTHORIZED).entity(SvcUtil.getErrorMessage("no authenticated server session")).build());
+			throw new WebApplicationException(Response.status(HttpURLConnection.HTTP_UNAUTHORIZED).entity(SvcUtil.getErrorEntity("server session not authenticated")).build());
 		}
-		return serverSession;
 	}
 
-	public static String getErrorMessage(String msg) {
+	public static String getErrorEntity(String msg) {
 		return "{ \"error\": \"" + msg + "\"}";
 	}
 

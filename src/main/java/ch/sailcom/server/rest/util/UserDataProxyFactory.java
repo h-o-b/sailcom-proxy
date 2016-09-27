@@ -11,7 +11,6 @@ import org.glassfish.hk2.api.Factory;
 
 import ch.sailcom.server.proxy.SessionProxy;
 import ch.sailcom.server.proxy.UserDataProxy;
-import ch.sailcom.server.rest.SvcUtil;
 
 public class UserDataProxyFactory implements Factory<UserDataProxy> {
 
@@ -26,7 +25,7 @@ public class UserDataProxyFactory implements Factory<UserDataProxy> {
 	public UserDataProxy provide() {
 		SessionProxy session = SvcUtil.getSessionProxy(request);
 		if (session == null) {
-			throw new WebApplicationException(Response.status(HttpURLConnection.HTTP_UNAUTHORIZED).entity(SvcUtil.getErrorMessage("no server session")).build());
+			throw new WebApplicationException(Response.status(HttpURLConnection.HTTP_UNAUTHORIZED).entity(SvcUtil.getErrorEntity("no server session")).build());
 		}
 		return session.getProxy(UserDataProxy.class);
 	}
