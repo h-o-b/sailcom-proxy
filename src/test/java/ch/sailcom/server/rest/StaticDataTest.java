@@ -10,10 +10,10 @@ import javax.ws.rs.core.Application;
 import org.junit.Before;
 import org.junit.Test;
 
-import ch.sailcom.server.dto.Harbor;
-import ch.sailcom.server.dto.Lake;
-import ch.sailcom.server.dto.SessionInfo;
-import ch.sailcom.server.dto.Ship;
+import ch.sailcom.server.model.Harbor;
+import ch.sailcom.server.model.Lake;
+import ch.sailcom.server.model.Ship;
+import ch.sailcom.server.rest.dto.SessionInfo;
 import ch.sailcom.server.rest.util.SailcomTest;
 import ch.sailcom.server.rest.util.TestAppBase;
 

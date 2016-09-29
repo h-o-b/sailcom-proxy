@@ -1,15 +1,15 @@
-package ch.sailcom.server.dto;
+package ch.sailcom.server.model;
 
 import java.io.Serializable;
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class UserPref implements Serializable /* for MapDb */ {
 
 	private static final long serialVersionUID = -5997213792851823945L;
 
-	public List<Integer> favoriteShips;
+	public Set<Integer> favoriteShips;
 
-	public Map<Integer, Integer> starredShips;
+	public Map<Integer, Integer> ratedShips;
 
 }

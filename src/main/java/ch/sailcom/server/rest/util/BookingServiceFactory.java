@@ -9,29 +9,29 @@ import javax.ws.rs.core.Response;
 
 import org.glassfish.hk2.api.Factory;
 
-import ch.sailcom.server.proxy.BookingProxy;
-import ch.sailcom.server.proxy.SessionProxy;
+import ch.sailcom.server.service.BookingService;
+import ch.sailcom.server.service.SessionService;
 
-public class BookingProxyFactory implements Factory<BookingProxy> {
+public class BookingServiceFactory implements Factory<BookingService> {
 
 	private final HttpServletRequest request;
 
 	@Inject
-	public BookingProxyFactory(HttpServletRequest request) {
+	public BookingServiceFactory(HttpServletRequest request) {
 		this.request = request;
 	}
 
 	@Override
-	public BookingProxy provide() {
-		SessionProxy session = SvcUtil.getSessionProxy(request);
+	public BookingService provide() {
+		SessionService session = SvcUtil.getSessionService(request);
 		if (session == null) {
 			throw new WebApplicationException(Response.status(HttpURLConnection.HTTP_UNAUTHORIZED).entity(SvcUtil.getErrorEntity("no server session")).build());
 		}
-		return session.getProxy(BookingProxy.class);
+		return session.getService(BookingService.class);
 	}
 
 	@Override
-	public void dispose(BookingProxy t) {
+	public void dispose(BookingService t) {
 	}
 
 }

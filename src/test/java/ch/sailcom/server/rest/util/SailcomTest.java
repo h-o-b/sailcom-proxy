@@ -4,7 +4,7 @@ import org.glassfish.jersey.test.JerseyTest;
 import org.glassfish.jersey.test.jdkhttp.JdkHttpServerTestContainerFactory;
 import org.glassfish.jersey.test.spi.TestContainerFactory;
 
-import ch.sailcom.server.dto.SessionInfo;
+import ch.sailcom.server.rest.dto.SessionInfo;
 
 public class SailcomTest extends JerseyTest {
 

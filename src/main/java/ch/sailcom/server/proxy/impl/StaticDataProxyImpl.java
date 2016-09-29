@@ -2,7 +2,10 @@ package ch.sailcom.server.proxy.impl;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -12,9 +15,9 @@ import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ch.sailcom.server.dto.Harbor;
-import ch.sailcom.server.dto.Lake;
-import ch.sailcom.server.dto.Ship;
+import ch.sailcom.server.model.Harbor;
+import ch.sailcom.server.model.Lake;
+import ch.sailcom.server.model.Ship;
 import ch.sailcom.server.proxy.StaticDataProxy;
 
 public class StaticDataProxyImpl implements StaticDataProxy {
@@ -24,13 +27,13 @@ public class StaticDataProxyImpl implements StaticDataProxy {
 	private static final String STATIC_DATA_URL = "http://www.sailcomnet.ch/liste.php";
 	private static final String MAIN_DIV = "Hauptteil";
 
-	private static StaticData staticData = null;
+	private static final Map<Integer, Lake> lakesById = new HashMap<Integer, Lake>();
+	private static final Map<Integer, Harbor> harborsById = new HashMap<Integer, Harbor>();
+	private static final Map<Integer, Ship> shipsById = new HashMap<Integer, Ship>();
 
 	private static void loadStaticData() {
 
-		if (staticData != null) {
-			return;
-		}
+		Map<String, Lake> lakesByName = new HashMap<String, Lake>();
 
 		LOGGER.debug("loadStaticData.1");
 		Document doc;
@@ -40,8 +43,8 @@ public class StaticDataProxyImpl implements StaticDataProxy {
 			LOGGER.error("Static data url crashed", e);
 			throw new RuntimeException("Static data url crashed", e);
 		}
-		LOGGER.debug("loadStaticData.2");
 
+		LOGGER.debug("loadStaticData.2");
 		Element main = doc.select("div#" + MAIN_DIV).first();
 		Element tab = main.select("table").first();
 		Elements rows = tab.select("tr");
@@ -84,8 +87,6 @@ public class StaticDataProxyImpl implements StaticDataProxy {
 		 */
 		// @formatter:on
 
-		staticData = new StaticData();
-
 		// Skip Header Row
 		for (int i = 1; i < rows.size(); i++) {
 
@@ -93,9 +94,9 @@ public class StaticDataProxyImpl implements StaticDataProxy {
 			Element c = null;
 			List<TextNode> tn = null;
 
-			Ship ship = new Ship();
-			Harbor harbor = null;
 			Lake lake = null;
+			Harbor harbor = null;
+			Ship ship = new Ship();
 
 			c = cells.get(0);
 			ship.hasImg = c.select("img").size() > 0;
@@ -117,17 +118,27 @@ public class StaticDataProxyImpl implements StaticDataProxy {
 			ship.harborId = Integer.parseInt(c.select("a").first().attr("href").split("=")[1]);
 
 			/* Get/Add Harbor */
-			harbor = staticData.getHarbor(ship.harborId);
+			harbor = harborsById.get(ship.harborId);
 			if (harbor != null) {
-				lake = staticData.getLake(harbor.lakeId);
+				lake = lakesById.get(harbor.lakeId);
 			} else {
 				/* Get/Add Lake */
 				String lakeName = tn.get(0).text();
-				lake = staticData.getLake(lakeName);
+				lake = lakesByName.get(lakeName);
 				if (lake == null) {
-					lake = staticData.addLake(lakeName);
+					lake = new Lake();
+					lake.id = lakesById.size() + 1;
+					lake.name = lakeName;
+					lakesById.put(lake.id, lake);
+					lakesByName.put(lake.name, lake);
 				}
-				harbor = staticData.addHarbor(ship.harborId, c.select("a").first().text(), lake.id);
+				/* Add Harbor */
+				String harborName = c.select("a").first().text();
+				harbor = new Harbor();
+				harbor.id = ship.harborId;
+				harbor.name = harborName;
+				harbor.lakeId = lake.id;
+				harborsById.put(harbor.id, harbor);
 			}
 
 			ship.lakeId = lake.id;
@@ -141,52 +152,36 @@ public class StaticDataProxyImpl implements StaticDataProxy {
 			ship.sailSize = tn.get(1).getWholeText().trim();
 			ship.length = tn.get(2).getWholeText().substring(3).trim();
 
-			staticData.addShip(ship);
+			shipsById.put(ship.id, ship);
+
 		}
+
 		LOGGER.debug("loadStaticData.3");
 
 	}
 
 	@Override
-	public StaticData getStaticData() {
-		loadStaticData();
-		return staticData;
-	}
-
-	@Override
 	public List<Lake> getLakes() {
-		loadStaticData();
-		return staticData.lakes;
-	}
-
-	@Override
-	public Lake getLake(int lakeId) {
-		loadStaticData();
-		return staticData.getLake(lakeId);
+		if (lakesById.size() == 0) {
+			loadStaticData();
+		}
+		return new ArrayList<Lake>(lakesById.values());
 	}
 
 	@Override
 	public List<Harbor> getHarbors() {
-		loadStaticData();
-		return staticData.harbors;
-	}
-
-	@Override
-	public Harbor getHarbor(int harborId) {
-		loadStaticData();
-		return staticData.getHarbor(harborId);
+		if (lakesById.size() == 0) {
+			loadStaticData();
+		}
+		return new ArrayList<Harbor>(harborsById.values());
 	}
 
 	@Override
 	public List<Ship> getShips() {
-		loadStaticData();
-		return staticData.ships;
-	}
-
-	@Override
-	public Ship getShip(int shipId) {
-		loadStaticData();
-		return staticData.getShip(shipId);
+		if (lakesById.size() == 0) {
+			loadStaticData();
+		}
+		return new ArrayList<Ship>(shipsById.values());
 	}
 
 }

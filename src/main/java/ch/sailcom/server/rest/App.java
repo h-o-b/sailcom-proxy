@@ -6,15 +6,17 @@ import org.glassfish.jersey.server.ResourceConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ch.sailcom.server.proxy.BookingProxy;
-import ch.sailcom.server.proxy.SessionProxy;
-import ch.sailcom.server.proxy.StaticDataProxy;
-import ch.sailcom.server.proxy.UserDataProxy;
-import ch.sailcom.server.proxy.impl.SessionProxyImpl;
-import ch.sailcom.server.rest.util.BookingProxyFactory;
+import ch.sailcom.server.rest.util.BookingServiceFactory;
 import ch.sailcom.server.rest.util.Encryptor;
-import ch.sailcom.server.rest.util.StaticDataProxyFactory;
-import ch.sailcom.server.rest.util.UserDataProxyFactory;
+import ch.sailcom.server.rest.util.StaticDataServiceFactory;
+import ch.sailcom.server.rest.util.UserServiceFactory;
+import ch.sailcom.server.rest.util.WeatherServiceFactory;
+import ch.sailcom.server.service.BookingService;
+import ch.sailcom.server.service.SessionService;
+import ch.sailcom.server.service.StaticDataService;
+import ch.sailcom.server.service.UserService;
+import ch.sailcom.server.service.WeatherService;
+import ch.sailcom.server.service.impl.SessionServiceImpl;
 
 public class App extends ResourceConfig {
 
@@ -29,18 +31,19 @@ public class App extends ResourceConfig {
 		register(new AbstractBinder() {
 			@Override
 			protected void configure() {
-				bindFactory(StaticDataProxyFactory.class).to(StaticDataProxy.class).proxy(true).proxyForSameScope(false).in(RequestScoped.class);
-				bindFactory(UserDataProxyFactory.class).to(UserDataProxy.class).proxy(true).proxyForSameScope(false).in(RequestScoped.class);
-				bindFactory(BookingProxyFactory.class).to(BookingProxy.class).proxy(true).proxyForSameScope(false).in(RequestScoped.class);
+				bindFactory(StaticDataServiceFactory.class).to(StaticDataService.class).proxy(true).proxyForSameScope(false).in(RequestScoped.class);
+				bindFactory(UserServiceFactory.class).to(UserService.class).proxy(true).proxyForSameScope(false).in(RequestScoped.class);
+				bindFactory(BookingServiceFactory.class).to(BookingService.class).proxy(true).proxyForSameScope(false).in(RequestScoped.class);
+				bindFactory(WeatherServiceFactory.class).to(WeatherService.class).proxy(true).proxyForSameScope(false).in(RequestScoped.class);
 			}
 		});
 
 		LOGGER.info("login");
-		SessionProxy session = new SessionProxyImpl();
+		SessionService session = new SessionServiceImpl();
 		session.login(USER, Encryptor.decrypt(PWD));
 
 		LOGGER.info("fetch static data");
-		session.getProxy(StaticDataProxy.class).getStaticData();
+		session.getService(StaticDataService.class).getShips();
 
 		LOGGER.info("logout");
 		session.logout();

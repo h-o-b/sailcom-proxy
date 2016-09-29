@@ -13,10 +13,10 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import ch.sailcom.server.dto.Harbor;
-import ch.sailcom.server.proxy.StaticDataProxy;
+import ch.sailcom.server.model.Harbor;
 import ch.sailcom.server.rest.util.Authenticated;
 import ch.sailcom.server.rest.util.SvcUtil;
+import ch.sailcom.server.service.StaticDataService;
 
 /**
  * Harbor Service
@@ -26,12 +26,12 @@ import ch.sailcom.server.rest.util.SvcUtil;
 public class HarborSvc {
 
 	@Inject
-	StaticDataProxy staticDataProxy;
+	StaticDataService staticDataService;
 
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public List<Harbor> getAllHarbors() throws IOException {
-		return staticDataProxy.getHarbors();
+		return staticDataService.getHarbors();
 	}
 
 	@GET
@@ -41,7 +41,7 @@ public class HarborSvc {
 		if (harborId == null) {
 			throw new WebApplicationException(Response.status(HttpURLConnection.HTTP_BAD_REQUEST).entity(SvcUtil.getErrorEntity("harborId parameter is mandatory")).build());
 		}
-		return staticDataProxy.getHarbor(harborId);
+		return staticDataService.getHarbor(harborId);
 	}
 
 }

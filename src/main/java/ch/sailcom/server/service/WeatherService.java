@@ -1,10 +1,10 @@
-package ch.sailcom.server.proxy;
+package ch.sailcom.server.service;
 
 import java.util.List;
 
 import ch.sailcom.server.model.WeatherInfo;
 
-public interface WeatherProxy {
+public interface WeatherService extends Service {
 
 	List<WeatherInfo> getWeatherInfo(int harborId, boolean isDet);
 

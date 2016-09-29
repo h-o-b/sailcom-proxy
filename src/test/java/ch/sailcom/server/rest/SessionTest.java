@@ -6,7 +6,7 @@ import javax.ws.rs.core.Application;
 
 import org.junit.Test;
 
-import ch.sailcom.server.dto.SessionInfo;
+import ch.sailcom.server.rest.dto.SessionInfo;
 import ch.sailcom.server.rest.util.SailcomTest;
 import ch.sailcom.server.rest.util.TestAppBase;
 

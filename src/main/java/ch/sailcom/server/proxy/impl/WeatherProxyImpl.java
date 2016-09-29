@@ -1,26 +1,33 @@
 package ch.sailcom.server.proxy.impl;
 
-import java.io.IOException;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import ch.sailcom.server.dto.Harbor;
-import ch.sailcom.server.dto.WeatherInfo;
-import ch.sailcom.server.proxy.StaticDataProxy;
+import ch.sailcom.server.model.Harbor;
+import ch.sailcom.server.model.WeatherInfo;
 import ch.sailcom.server.proxy.WeatherProxy;
+import ch.sailcom.server.service.StaticDataService;
 
 public class WeatherProxyImpl implements WeatherProxy {
 
+	private static Logger LOGGER = LoggerFactory.getLogger(WeatherProxyImpl.class);
+
 	private static final String WEATHER_BASE_URL = "https://www.meteoblue.com/de/schweiz/wetter-";
 
-	private static final StaticDataProxy staticDataProxy = new StaticDataProxyImpl();
+	private final StaticDataService staticDataService;
 
-	public static List<WeatherInfo> getWeatherInfo(StaticDataProxy staticDataProxy, int harborId, boolean isDet) throws IOException, ParseException {
+	public WeatherProxyImpl(StaticDataService staticDataService) {
+		this.staticDataService = staticDataService;
+	}
+
+	@Override
+	public List<WeatherInfo> getWeatherInfo(int harborId, boolean isDet) {
 
 		// @formatter:off
 		/*
@@ -66,54 +73,53 @@ public class WeatherProxyImpl implements WeatherProxy {
 		 */
 		// @formatter:on
 
-		Harbor h = staticDataProxy.getHarbor(harborId);
-		String url = WEATHER_BASE_URL + h.name.toLowerCase();
-		Document doc = Jsoup.connect(url).get();
-
 		List<WeatherInfo> infos = new ArrayList<WeatherInfo>();
+		Harbor h = this.staticDataService.getHarbor(harborId);
 
-		for (int seqNr = 1; seqNr <= 7; seqNr++) {
-			WeatherInfo info = new WeatherInfo();
-			Element dayDiv = doc.getElementById("day" + seqNr);
-			info.date = dayDiv.getElementsByClass("tab_day_long").first().text();
-			info.seqNr = seqNr;
-			// weather
-			Element div = dayDiv.getElementsByClass("weather").first().getElementsByClass("picon").first();
-			for (String c : div.classNames()) {
-				if (c.endsWith("iday")) {
-					info.weather = c;
+		try {
+			String url = WEATHER_BASE_URL + h.name.toLowerCase();
+			Document doc = Jsoup.connect(url).get();
+
+			for (int seqNr = 1; seqNr <= 7; seqNr++) {
+				WeatherInfo info = new WeatherInfo();
+				Element dayDiv = doc.getElementById("day" + seqNr);
+				info.date = dayDiv.getElementsByClass("tab_day_long").first().text();
+				info.seqNr = seqNr;
+				// weather
+				Element div = dayDiv.getElementsByClass("weather").first().getElementsByClass("picon").first();
+				for (String c : div.classNames()) {
+					if (c.endsWith("iday")) {
+						info.weather = c;
+					}
 				}
-			}
-			// temperature
-			info.temperature = dayDiv.getElementsByClass("tab_temp_min").first().text() + " - " + dayDiv.getElementsByClass("tab_temp_max").first().text();
-			// wind direction
-			div = dayDiv.getElementsByClass("winddir").first();
-			for (String c : div.classNames()) {
-				if (!c.equals("glyph") && !c.equals("winddir")) {
-					info.windDirection = c;
+				// temperature
+				info.temperature = dayDiv.getElementsByClass("tab_temp_min").first().text() + " - " + dayDiv.getElementsByClass("tab_temp_max").first().text();
+				// wind direction
+				div = dayDiv.getElementsByClass("winddir").first();
+				for (String c : div.classNames()) {
+					if (!c.equals("glyph") && !c.equals("winddir")) {
+						info.windDirection = c;
+					}
 				}
+				// wind speed
+				div = dayDiv.getElementsByClass("wind").first();
+				info.windSpeed = div.text();
+				// precipitation
+				info.precipitation = dayDiv.getElementsByClass("tab_precip").first().text();
+				// sun hours
+				info.sunHours = dayDiv.getElementsByClass("tab_sun").first().text();
+				infos.add(info);
 			}
-			// wind speed
-			div = dayDiv.getElementsByClass("wind").first();
-			info.windSpeed = div.text();
-			// precipitation
-			info.precipitation = dayDiv.getElementsByClass("tab_precip").first().text();
-			// sun hours
-			info.sunHours = dayDiv.getElementsByClass("tab_sun").first().text();
-			infos.add(info);
+
+		} catch (Exception e) {
+
+			LOGGER.error("getWeather({}, {}) crashed", harborId, isDet, e);
+			throw new RuntimeException("getWeather crashed", e);
+
 		}
 
 		return infos;
 
-	}
-
-	@Override
-	public List<WeatherInfo> getWeatherInfo(int harborId, boolean isDet) {
-		try {
-			return getWeatherInfo(staticDataProxy, harborId, isDet);
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
 	}
 
 }

@@ -17,7 +17,7 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 
 	@Override
 	public void filter(ContainerRequestContext requestContext) throws IOException {
-		SvcUtil.ensureSessionProxy(servletRequest);
+		SvcUtil.ensureSessionService(servletRequest);
 	}
 
 }

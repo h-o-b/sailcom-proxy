@@ -20,12 +20,8 @@ import org.jsoup.nodes.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ch.sailcom.server.dto.User;
-import ch.sailcom.server.proxy.BookingProxy;
+import ch.sailcom.server.model.User;
 import ch.sailcom.server.proxy.SessionProxy;
-import ch.sailcom.server.proxy.StaticDataProxy;
-import ch.sailcom.server.proxy.UserDataProxy;
-import ch.sailcom.server.proxy.WeatherProxy;
 
 public class SessionProxyImpl implements SessionProxy {
 
@@ -56,6 +52,11 @@ public class SessionProxyImpl implements SessionProxy {
 				CookieHandler.setDefault(cookieManager);
 			}
 		}
+	}
+
+	@Override
+	public String getSessionId() {
+		return sessionCookie != null ? sessionCookie.getValue() : null;
 	}
 
 	private boolean isConnected() {
@@ -155,11 +156,6 @@ public class SessionProxyImpl implements SessionProxy {
 				user.ip = user.ip.substring(user.ip.indexOf("(IP:"));
 				user.ip = user.ip.substring(4, user.ip.length() - 1);
 
-				this.proxyMap.put(StaticDataProxy.class, new StaticDataProxyImpl());
-				this.proxyMap.put(UserDataProxy.class, new UserDataProxyImpl(getProxy(StaticDataProxy.class).getStaticData(), user));
-				this.proxyMap.put(BookingProxy.class, new BookingProxyImpl());
-				this.proxyMap.put(WeatherProxy.class, new WeatherProxyImpl());
-
 				LOGGER.info("login.5");
 				return true;
 
@@ -177,19 +173,8 @@ public class SessionProxyImpl implements SessionProxy {
 	}
 
 	@Override
-	public String getSessionId() {
-		return sessionCookie.getValue();
-	}
-
-	@Override
 	public User getUser() {
 		return user;
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public <T> T getProxy(Class<T> proxyClass) {
-		return (T) this.proxyMap.get(proxyClass);
 	}
 
 	@Override

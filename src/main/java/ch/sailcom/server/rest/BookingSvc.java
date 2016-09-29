@@ -18,12 +18,11 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import ch.sailcom.server.dto.Booking;
-import ch.sailcom.server.proxy.BookingProxy;
-import ch.sailcom.server.proxy.StaticDataProxy;
-import ch.sailcom.server.proxy.impl.StaticData;
+import ch.sailcom.server.model.Booking;
 import ch.sailcom.server.rest.util.Authenticated;
 import ch.sailcom.server.rest.util.SvcUtil;
+import ch.sailcom.server.service.BookingService;
+import ch.sailcom.server.service.StaticDataService;
 
 /**
  * Bookings Service
@@ -35,21 +34,19 @@ public class BookingSvc {
 	private DateFormat df = new SimpleDateFormat("dd.MM.yyyy");
 
 	@Inject
-	StaticDataProxy staticDataProxy;
+	StaticDataService staticDataService;
 
 	@Inject
-	BookingProxy bookingProxy;
+	BookingService bookingService;
 
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public List<Booking> getBookings(@QueryParam("shipId") Integer shipId, @QueryParam("date") String date, @QueryParam("nofWeeks") Integer nofWeeks) throws IOException {
 
-		StaticData sd = staticDataProxy.getStaticData();
-
 		/* Validate Service Input */
 		if (shipId == null) {
 			throw new WebApplicationException(Response.status(HttpURLConnection.HTTP_BAD_REQUEST).entity(SvcUtil.getErrorEntity("shipId parameter is mandatory")).build());
-		} else if (sd.getShip(shipId) == null) {
+		} else if (staticDataService.getShip(shipId) == null) {
 			throw new WebApplicationException(Response.status(HttpURLConnection.HTTP_NOT_FOUND).entity(SvcUtil.getErrorEntity("ship not found")).build());
 		}
 
@@ -71,7 +68,7 @@ public class BookingSvc {
 			currDate = cal.getTime();
 		}
 
-		return bookingProxy.getBookings(shipId, currDate, nofWeeks);
+		return bookingService.getBookings(shipId, currDate, nofWeeks);
 
 	}
 

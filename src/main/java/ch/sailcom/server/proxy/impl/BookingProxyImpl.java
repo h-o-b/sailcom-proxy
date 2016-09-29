@@ -1,8 +1,6 @@
 package ch.sailcom.server.proxy.impl;
 
-import java.io.IOException;
 import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -14,14 +12,18 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import ch.sailcom.server.dto.Booking;
-import ch.sailcom.server.dto.Ship;
-import ch.sailcom.server.dto.Trip;
+import ch.sailcom.server.model.Booking;
+import ch.sailcom.server.model.Ship;
+import ch.sailcom.server.model.Trip;
 import ch.sailcom.server.proxy.BookingProxy;
-import ch.sailcom.server.proxy.StaticDataProxy;
+import ch.sailcom.server.service.StaticDataService;
 
 public class BookingProxyImpl implements BookingProxy {
+
+	private static Logger LOGGER = LoggerFactory.getLogger(BookingProxyImpl.class);
 
 	private static final String TRIPS_BASE_URL = "https://www.sailcomnet.ch/net/res_edit.php?lng=de";
 	private static final DateFormat tf = new SimpleDateFormat("dd.MM.yy HH:mm");
@@ -31,9 +33,14 @@ public class BookingProxyImpl implements BookingProxy {
 	private static final DateFormat df = new SimpleDateFormat("dd.MM.yyyy");
 	private static final DateFormat jdf = new SimpleDateFormat("yyyy-MM-dd");
 
-	private static final StaticDataProxy staticDataProxy = new StaticDataProxyImpl();
+	private final StaticDataService staticDataService;
 
-	private static List<Trip> getTrips(StaticDataProxy staticDataProxy) throws IOException, ParseException {
+	public BookingProxyImpl(StaticDataService staticDataService) {
+		this.staticDataService = staticDataService;
+	}
+
+	@Override
+	public List<Trip> getTrips() {
 
 		// @formatter:off
 		/*
@@ -78,47 +85,57 @@ public class BookingProxyImpl implements BookingProxy {
 		 */
 		// @formatter:on
 
-		String url = TRIPS_BASE_URL;
-		Document doc = Jsoup.connect(url).get();
-
-		if (doc.select("input[name=txtMitgliedernummer]").first() != null) {
-			throw new NoSessionException();
-		}
-
 		List<Trip> trips = new ArrayList<Trip>();
-		Element div = doc.getElementById("Hauptteil");
-		Element tab = div.getElementsByTag("tbody").first();
 
-		// Loop trip rows
-		Elements tripRows = tab.select("> tr");
+		try {
 
-		for (int t = 1; t < tripRows.size(); t++) {
-			Element tripRow = tripRows.get(t);
-			Elements tripCells = tripRow.select("> td");
-			Element shipCell = tripCells.get(1);
-			Element durCell = tripCells.get(0);
-			Element idCell = tripCells.get(4);
+			String url = TRIPS_BASE_URL;
+			Document doc = Jsoup.connect(url).get();
 
-			Trip trip = new Trip();
-			String fullName = shipCell.text().replace(", ", "@");
-			Ship ship = staticDataProxy.getStaticData().getShip(fullName);
-			if (ship != null) {
-
-				trip.tripId = idCell.getElementsByTag("a").first().attr("href");
-				trip.tripId = trip.tripId.substring(trip.tripId.indexOf("?nid=") + 5);
-
-				trip.shipId = ship.id;
-				trip.harborId = ship.harborId;
-				trip.lakeId = ship.lakeId;
-				String dur[] = durCell.text().replace("\u00a0", " ").split(" ");
-
-				trip.timeFrom = dur[2];
-				trip.dateFrom = jtf.format(tf.parse(dur[1] + " " + trip.timeFrom));
-				trip.timeTo = dur[7];
-				trip.dateTo = jtf.format(tf.parse(dur[6] + " " + trip.timeTo));
-
-				trips.add(trip);
+			if (doc.select("input[name=txtMitgliedernummer]").first() != null) {
+				throw new NoSessionException();
 			}
+
+			Element div = doc.getElementById("Hauptteil");
+			Element tab = div.getElementsByTag("tbody").first();
+
+			// Loop trip rows
+			Elements tripRows = tab.select("> tr");
+
+			for (int t = 1; t < tripRows.size(); t++) {
+				Element tripRow = tripRows.get(t);
+				Elements tripCells = tripRow.select("> td");
+				Element shipCell = tripCells.get(1);
+				Element durCell = tripCells.get(0);
+				Element idCell = tripCells.get(4);
+
+				Trip trip = new Trip();
+				String fullName = shipCell.text().replace(", ", "@");
+				Ship ship = this.staticDataService.getShip(fullName);
+				if (ship != null) {
+
+					trip.tripId = idCell.getElementsByTag("a").first().attr("href");
+					trip.tripId = trip.tripId.substring(trip.tripId.indexOf("?nid=") + 5);
+
+					trip.shipId = ship.id;
+					trip.harborId = ship.harborId;
+					trip.lakeId = ship.lakeId;
+					String dur[] = durCell.text().replace("\u00a0", " ").split(" ");
+
+					trip.timeFrom = dur[2];
+					trip.dateFrom = jtf.format(tf.parse(dur[1] + " " + trip.timeFrom));
+					trip.timeTo = dur[7];
+					trip.dateTo = jtf.format(tf.parse(dur[6] + " " + trip.timeTo));
+
+					trips.add(trip);
+				}
+
+			}
+
+		} catch (Exception e) {
+
+			LOGGER.error("getTrips crashed", e);
+			throw new RuntimeException("getTrips crashed", e);
 
 		}
 
@@ -126,7 +143,8 @@ public class BookingProxyImpl implements BookingProxy {
 
 	}
 
-	public static List<Booking> getBookings(StaticDataProxy staticDataProxy, int shipId, Date fromDate, int nofWeeks) throws IOException, ParseException {
+	@Override
+	public List<Booking> getBookings(int shipId, Date fromDate, int nofWeeks) {
 
 		// @formatter:off
 		/*
@@ -197,115 +215,107 @@ public class BookingProxyImpl implements BookingProxy {
 		 */
 		// @formatter:on
 
-		String url = BOOKING_BASE_URL + "&boot=" + shipId + "&vonPlan=" + df.format(fromDate) + "&wochen=" + nofWeeks;
-		Document doc = Jsoup.connect(url).get();
-
-		if (doc.select("input[name=txtMitgliedernummer]").first() != null) {
-			throw new NoSessionException();
-		}
-
 		List<Booking> bookings = new ArrayList<Booking>();
-		Element tab = doc.getElementsByTag("tbody").first();
 
-		// Loop week rows
-		Elements weeks = tab.select("> tr");
-		for (int w = 2; w < weeks.size() - 1; w++) {
+		try {
 
-			// Loop day cells
-			Element week = weeks.get(w);
-			Elements days = week.select("> td");
-			for (int d = 1; d < days.size(); d++) {
+			String url = BOOKING_BASE_URL + "&boot=" + shipId + "&vonPlan=" + df.format(fromDate) + "&wochen=" + nofWeeks;
+			Document doc = Jsoup.connect(url).get();
 
-				Element day = days.get(d);
+			if (doc.select("input[name=txtMitgliedernummer]").first() != null) {
+				throw new NoSessionException();
+			}
 
-				// Date
-				@SuppressWarnings("deprecation")
-				String bookDate = day.select("span").first().text() + (1900 + fromDate.getYear());
+			Element tab = doc.getElementsByTag("tbody").first();
 
-				// Loop bookings
-				Elements booksA = day.select("a.resdetail");
-				Elements booksDiv = day.select("div.res");
-				for (int b = 0; b < booksDiv.size(); b++) {
+			// Loop week rows
+			Elements weeks = tab.select("> tr");
+			for (int w = 2; w < weeks.size() - 1; w++) {
 
-					Element a = booksA.get(b);
-					Element book = booksDiv.get(b);
-					int tripId = Integer.parseInt(book.id());
+				// Loop day cells
+				Element week = weeks.get(w);
+				Elements days = week.select("> td");
+				for (int d = 1; d < days.size(); d++) {
 
-					Booking booking = new Booking();
+					Element day = days.get(d);
 
-					booking.shipId = shipId;
-					booking.harborId = staticDataProxy.getShip(booking.shipId).harborId;
-					booking.lakeId = staticDataProxy.getHarbor(booking.harborId).lakeId;
+					// Date
+					@SuppressWarnings("deprecation")
+					String bookDate = day.select("span").first().text() + (1900 + fromDate.getYear());
 
-					booking.bookDate = jdf.format(df.parse(bookDate));
-					Element bookTime = a.select("div#Res").first();
-					booking.bookTimeFrom = bookTime.text().split("-")[0].trim();
-					booking.bookTimeTo = bookTime.text().split("-")[1].trim();
+					// Loop bookings
+					Elements booksA = day.select("a.resdetail");
+					Elements booksDiv = day.select("div.res");
+					for (int b = 0; b < booksDiv.size(); b++) {
 
-					booking.tripId = tripId;
-					booking.isMine = bookTime.attr("style").contains("#80FF80");
+						Element a = booksA.get(b);
+						Element book = booksDiv.get(b);
+						int tripId = Integer.parseInt(book.id());
 
-					String tripInfo = book.select("table").first().select("tr").get(0).select("td").get(0).text();
-					Pattern p = Pattern.compile("[0-9][0-9]\\.[0-9][0-9]\\.[0-9][0-9][0-9][0-9] [0-9][0-9]:[0-9][0-9]");
-					Matcher m = p.matcher(tripInfo);
-					if (m.find()) { // from date
-						booking.tripDateFrom = jdf.format(df.parse(m.group().split(" ")[0]));
-						booking.tripTimeFrom = m.group().split(" ")[1];
-					}
-					if (m.find()) { // to date
-						booking.tripDateTo = jdf.format(df.parse(m.group().split(" ")[0]));
-						booking.tripTimeTo = m.group().split(" ")[1];
-					}
+						Booking booking = new Booking();
 
-					Element userInfo = book.select("table").first().select("tr").get(1).select("td").get(1);
-					booking.userName = userInfo.select("b").first().text();
-					String[] parts = userInfo.html().replace("<b>", "").replace("</b>", "").split("<br />"); // Jsoup transforms <br> to <br />
-					boolean isComment = false;
-					for (int i = 1; i < parts.length; i++) {
-						if (parts[i].equals("")) {
-							// ignore
-						} else if (parts[i].startsWith("Tel")) {
-							booking.userPhone = parts[i].substring(parts[i].indexOf(":") + 2);
-						} else if (parts[i].startsWith("Mobil")) {
-							booking.userMobile = parts[i].substring(parts[i].indexOf(":") + 2);
-						} else if (parts[i].startsWith("<a")) {
-							booking.userMail = userInfo.select("a").first().text();
-							isComment = true;
-						} else if (isComment) {
-							booking.userComment = booking.userComment == null ? parts[i] : booking.userComment + "\\n" + parts[i];
-						} else {
-							booking.userAdress = booking.userAdress == null ? parts[i] : booking.userAdress + "\\n" + parts[i];
+						booking.shipId = shipId;
+						booking.harborId = this.staticDataService.getShip(booking.shipId).harborId;
+						booking.lakeId = this.staticDataService.getHarbor(booking.harborId).lakeId;
+
+						booking.bookDate = jdf.format(df.parse(bookDate));
+						Element bookTime = a.select("div#Res").first();
+						booking.bookTimeFrom = bookTime.text().split("-")[0].trim();
+						booking.bookTimeTo = bookTime.text().split("-")[1].trim();
+
+						booking.tripId = tripId;
+						booking.isMine = bookTime.attr("style").contains("#80FF80");
+
+						String tripInfo = book.select("table").first().select("tr").get(0).select("td").get(0).text();
+						Pattern p = Pattern.compile("[0-9][0-9]\\.[0-9][0-9]\\.[0-9][0-9][0-9][0-9] [0-9][0-9]:[0-9][0-9]");
+						Matcher m = p.matcher(tripInfo);
+						if (m.find()) { // from date
+							booking.tripDateFrom = jdf.format(df.parse(m.group().split(" ")[0]));
+							booking.tripTimeFrom = m.group().split(" ")[1];
 						}
-					}
+						if (m.find()) { // to date
+							booking.tripDateTo = jdf.format(df.parse(m.group().split(" ")[0]));
+							booking.tripTimeTo = m.group().split(" ")[1];
+						}
 
-					bookings.add(booking);
+						Element userInfo = book.select("table").first().select("tr").get(1).select("td").get(1);
+						booking.userName = userInfo.select("b").first().text();
+						String[] parts = userInfo.html().replace("<b>", "").replace("</b>", "").split("<br />"); // Jsoup transforms <br> to <br />
+						boolean isComment = false;
+						for (int i = 1; i < parts.length; i++) {
+							if (parts[i].equals("")) {
+								// ignore
+							} else if (parts[i].startsWith("Tel")) {
+								booking.userPhone = parts[i].substring(parts[i].indexOf(":") + 2);
+							} else if (parts[i].startsWith("Mobil")) {
+								booking.userMobile = parts[i].substring(parts[i].indexOf(":") + 2);
+							} else if (parts[i].startsWith("<a")) {
+								booking.userMail = userInfo.select("a").first().text();
+								isComment = true;
+							} else if (isComment) {
+								booking.userComment = booking.userComment == null ? parts[i] : booking.userComment + "\\n" + parts[i];
+							} else {
+								booking.userAdress = booking.userAdress == null ? parts[i] : booking.userAdress + "\\n" + parts[i];
+							}
+						}
+
+						bookings.add(booking);
+
+					}
 
 				}
 
 			}
 
+		} catch (Exception e) {
+
+			LOGGER.error("getBookings crashed", e);
+			throw new RuntimeException("getBookings crashed", e);
+
 		}
 
 		return bookings;
 
-	}
-
-	@Override
-	public List<Trip> getTrips() {
-		try {
-			return getTrips(staticDataProxy);
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	@Override
-	public List<Booking> getBookings(int shipId, Date fromDate, int nofWeeks) {
-		try {
-			return getBookings(staticDataProxy, shipId, fromDate, nofWeeks);
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
 	}
 
 }

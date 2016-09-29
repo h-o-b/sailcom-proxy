@@ -9,10 +9,10 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-import ch.sailcom.server.dto.User;
-import ch.sailcom.server.dto.UserInfo;
-import ch.sailcom.server.proxy.UserDataProxy;
+import ch.sailcom.server.model.User;
+import ch.sailcom.server.model.UserInfo;
 import ch.sailcom.server.rest.util.Authenticated;
+import ch.sailcom.server.service.UserService;
 
 /**
  * User Service
@@ -22,40 +22,40 @@ import ch.sailcom.server.rest.util.Authenticated;
 public class UserSvc {
 
 	@Inject
-	UserDataProxy userDataProxy;
+	UserService userService;
 
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public User getUser() throws IOException {
-		return userDataProxy.getUser();
+		return userService.getUser();
 	}
 
 	@GET
 	@Path("/info")
 	@Produces(MediaType.APPLICATION_JSON)
 	public UserInfo getUserInfo() throws IOException {
-		return userDataProxy.getUserInfo();
+		return userService.getUserInfo();
 	}
 
 	@GET
 	@Path("/availableLakes")
 	@Produces(MediaType.APPLICATION_JSON)
 	public List<Integer> getLakes() throws IOException {
-		return userDataProxy.getAvailableLakes();
+		return userService.getAvailableLakes();
 	}
 
 	@GET
 	@Path("/availableHarbors")
 	@Produces(MediaType.APPLICATION_JSON)
 	public List<Integer> getHarbors() throws IOException {
-		return userDataProxy.getAvailableHarbors();
+		return userService.getAvailableHarbors();
 	}
 
 	@GET
 	@Path("/availableShips")
 	@Produces(MediaType.APPLICATION_JSON)
 	public List<Integer> getShips() throws IOException {
-		return userDataProxy.getAvailableShips();
+		return userService.getAvailableShips();
 	}
 
 }

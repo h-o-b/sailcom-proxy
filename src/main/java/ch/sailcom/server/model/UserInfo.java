@@ -1,4 +1,4 @@
-package ch.sailcom.server.dto;
+package ch.sailcom.server.model;
 
 import java.util.List;
 

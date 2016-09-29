@@ -1,4 +1,6 @@
-package ch.sailcom.server.dto;
+package ch.sailcom.server.rest.dto;
+
+import ch.sailcom.server.model.User;
 
 public class SessionInfo {
 

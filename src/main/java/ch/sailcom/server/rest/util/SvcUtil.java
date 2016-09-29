@@ -7,32 +7,32 @@ import javax.servlet.http.HttpSession;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 
-import ch.sailcom.server.proxy.SessionProxy;
-import ch.sailcom.server.proxy.impl.SessionProxyImpl;
+import ch.sailcom.server.service.SessionService;
+import ch.sailcom.server.service.impl.SessionServiceImpl;
 
 public class SvcUtil {
 
 	private static final String SESSION = "sailcomSession";
 
-	public static SessionProxy getSessionProxy(HttpServletRequest request) {
+	public static SessionService getSessionService(HttpServletRequest request) {
 		HttpSession clientSession = request.getSession();
-		SessionProxy session = clientSession == null ? null : (SessionProxy) clientSession.getAttribute(SESSION);
+		SessionService session = clientSession == null ? null : (SessionService) clientSession.getAttribute(SESSION);
 		return session;
 	}
 
-	public static SessionProxy initSessionProxy(HttpServletRequest request) {
+	public static SessionService initSessionService(HttpServletRequest request) {
 		HttpSession clientSession = request.getSession(true);
 		if (clientSession.getAttribute(SESSION) == null) {
-			clientSession.setAttribute(SESSION, new SessionProxyImpl());
+			clientSession.setAttribute(SESSION, new SessionServiceImpl());
 		}
-		return (SessionProxy) clientSession.getAttribute(SESSION);
+		return (SessionService) clientSession.getAttribute(SESSION);
 	}
 
-	public static void ensureSessionProxy(HttpServletRequest request) {
-		SessionProxy serverSession = SvcUtil.getSessionProxy(request);
-		if (serverSession == null) {
+	public static void ensureSessionService(HttpServletRequest request) {
+		SessionService sessionService = getSessionService(request);
+		if (sessionService == null) {
 			throw new WebApplicationException(Response.status(HttpURLConnection.HTTP_UNAUTHORIZED).entity(SvcUtil.getErrorEntity("no server session")).build());
-		} else if (!serverSession.isLoggedIn()) {
+		} else if (!sessionService.isLoggedIn()) {
 			throw new WebApplicationException(Response.status(HttpURLConnection.HTTP_UNAUTHORIZED).entity(SvcUtil.getErrorEntity("server session not authenticated")).build());
 		}
 	}

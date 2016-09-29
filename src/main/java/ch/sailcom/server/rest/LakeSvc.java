@@ -13,10 +13,10 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import ch.sailcom.server.dto.Lake;
-import ch.sailcom.server.proxy.StaticDataProxy;
+import ch.sailcom.server.model.Lake;
 import ch.sailcom.server.rest.util.Authenticated;
 import ch.sailcom.server.rest.util.SvcUtil;
+import ch.sailcom.server.service.StaticDataService;
 
 /**
  * Lake Service
@@ -26,12 +26,12 @@ import ch.sailcom.server.rest.util.SvcUtil;
 public class LakeSvc {
 
 	@Inject
-	StaticDataProxy staticDataProxy;
+	StaticDataService staticDataService;
 
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public List<Lake> getAllLakes() throws IOException {
-		return staticDataProxy.getLakes();
+		return staticDataService.getLakes();
 	}
 
 	@GET
@@ -41,7 +41,7 @@ public class LakeSvc {
 		if (lakeId == null) {
 			throw new WebApplicationException(Response.status(HttpURLConnection.HTTP_BAD_REQUEST).entity(SvcUtil.getErrorEntity("lakeId parameter is mandatory")).build());
 		}
-		return staticDataProxy.getLake(lakeId);
+		return staticDataService.getLake(lakeId);
 	}
 
 }

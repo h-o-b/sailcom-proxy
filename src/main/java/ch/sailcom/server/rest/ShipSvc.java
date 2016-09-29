@@ -13,10 +13,10 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import ch.sailcom.server.dto.Ship;
-import ch.sailcom.server.proxy.StaticDataProxy;
+import ch.sailcom.server.model.Ship;
 import ch.sailcom.server.rest.util.Authenticated;
 import ch.sailcom.server.rest.util.SvcUtil;
+import ch.sailcom.server.service.StaticDataService;
 
 /**
  * Ship Service
@@ -26,12 +26,12 @@ import ch.sailcom.server.rest.util.SvcUtil;
 public class ShipSvc {
 
 	@Inject
-	StaticDataProxy staticDataProxy;
+	StaticDataService staticDataService;
 
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public List<Ship> getAllShips() throws IOException {
-		return staticDataProxy.getShips();
+		return staticDataService.getShips();
 	}
 
 	@GET
@@ -41,7 +41,7 @@ public class ShipSvc {
 		if (shipId == null) {
 			throw new WebApplicationException(Response.status(HttpURLConnection.HTTP_BAD_REQUEST).entity(SvcUtil.getErrorEntity("shipId parameter is mandatory")).build());
 		}
-		return staticDataProxy.getShip(shipId);
+		return staticDataService.getShip(shipId);
 	}
 
 }

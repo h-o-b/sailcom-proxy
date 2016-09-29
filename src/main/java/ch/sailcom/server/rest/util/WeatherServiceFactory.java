@@ -9,29 +9,29 @@ import javax.ws.rs.core.Response;
 
 import org.glassfish.hk2.api.Factory;
 
-import ch.sailcom.server.proxy.SessionProxy;
-import ch.sailcom.server.proxy.StaticDataProxy;
+import ch.sailcom.server.service.SessionService;
+import ch.sailcom.server.service.WeatherService;
 
-public class StaticDataProxyFactory implements Factory<StaticDataProxy> {
+public class WeatherServiceFactory implements Factory<WeatherService> {
 
 	private final HttpServletRequest request;
 
 	@Inject
-	public StaticDataProxyFactory(HttpServletRequest request) {
+	public WeatherServiceFactory(HttpServletRequest request) {
 		this.request = request;
 	}
 
 	@Override
-	public StaticDataProxy provide() {
-		SessionProxy session = SvcUtil.getSessionProxy(request);
+	public WeatherService provide() {
+		SessionService session = SvcUtil.getSessionService(request);
 		if (session == null) {
 			throw new WebApplicationException(Response.status(HttpURLConnection.HTTP_UNAUTHORIZED).entity(SvcUtil.getErrorEntity("no server session")).build());
 		}
-		return session.getProxy(StaticDataProxy.class);
+		return session.getService(WeatherService.class);
 	}
 
 	@Override
-	public void dispose(StaticDataProxy t) {
+	public void dispose(WeatherService t) {
 	}
 
 }
