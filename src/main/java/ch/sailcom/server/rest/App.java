@@ -42,6 +42,9 @@ public class App extends ResourceConfig {
 		LOGGER.info("fetch static data");
 		session.getProxy(StaticDataProxy.class).getStaticData();
 
+		LOGGER.info("logout");
+		session.logout();
+
 	}
 
 }

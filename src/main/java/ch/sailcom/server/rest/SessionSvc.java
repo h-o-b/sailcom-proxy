@@ -23,7 +23,7 @@ import ch.sailcom.server.rest.util.Authenticated;
 import ch.sailcom.server.rest.util.SvcUtil;
 
 /**
- * Sailcom SessionProxy Service
+ * Sailcom Session Service
  */
 @Path("/session")
 public class SessionSvc {

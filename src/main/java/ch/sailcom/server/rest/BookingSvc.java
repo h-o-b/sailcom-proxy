@@ -19,9 +19,9 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import ch.sailcom.server.dto.Booking;
-import ch.sailcom.server.dto.StaticData;
 import ch.sailcom.server.proxy.BookingProxy;
 import ch.sailcom.server.proxy.StaticDataProxy;
+import ch.sailcom.server.proxy.impl.StaticData;
 import ch.sailcom.server.rest.util.Authenticated;
 import ch.sailcom.server.rest.util.SvcUtil;
 

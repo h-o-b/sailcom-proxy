@@ -5,9 +5,8 @@ import java.util.Map;
 
 import ch.sailcom.server.dto.Ship;
 import ch.sailcom.server.dto.User;
-import ch.sailcom.server.dto.UserData;
 import ch.sailcom.server.dto.UserInfo;
-import ch.sailcom.server.dto.UserPreference;
+import ch.sailcom.server.dto.UserPref;
 
 public interface UserDataProxy {
 
@@ -15,19 +14,21 @@ public interface UserDataProxy {
 
 	UserInfo getUserInfo();
 
-	UserPreference getUserPreference();
+	List<Integer> getAvailableLakes();
 
-	UserData getUserData();
+	List<Integer> getAvailableHarbors();
 
-	List<Integer> getLakes();
+	List<Integer> getAvailableShips();
 
-	List<Integer> getHarbors();
+	UserPref getUserPref();
 
-	List<Integer> getShips();
+	List<Integer> getFavoriteShips();
 
 	List<Integer> like(Ship ship);
 
 	List<Integer> unlike(Ship ship);
+
+	Map<Integer, Integer> getRatedShips();
 
 	Map<Integer, Integer> rate(Ship ship, int starCount);
 

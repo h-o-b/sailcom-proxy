@@ -5,7 +5,7 @@ import java.util.List;
 import ch.sailcom.server.dto.Harbor;
 import ch.sailcom.server.dto.Lake;
 import ch.sailcom.server.dto.Ship;
-import ch.sailcom.server.dto.StaticData;
+import ch.sailcom.server.proxy.impl.StaticData;
 
 public interface StaticDataProxy {
 

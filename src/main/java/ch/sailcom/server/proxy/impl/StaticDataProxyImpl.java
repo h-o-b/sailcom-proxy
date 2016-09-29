@@ -15,7 +15,6 @@ import org.slf4j.LoggerFactory;
 import ch.sailcom.server.dto.Harbor;
 import ch.sailcom.server.dto.Lake;
 import ch.sailcom.server.dto.Ship;
-import ch.sailcom.server.dto.StaticData;
 import ch.sailcom.server.proxy.StaticDataProxy;
 
 public class StaticDataProxyImpl implements StaticDataProxy {

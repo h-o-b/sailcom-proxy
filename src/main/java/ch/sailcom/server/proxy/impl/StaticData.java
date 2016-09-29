@@ -1,9 +1,13 @@
-package ch.sailcom.server.dto;
+package ch.sailcom.server.proxy.impl;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import ch.sailcom.server.dto.Harbor;
+import ch.sailcom.server.dto.Lake;
+import ch.sailcom.server.dto.Ship;
 
 public class StaticData {
 

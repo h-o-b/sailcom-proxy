@@ -128,7 +128,7 @@ public class SessionProxyImpl implements SessionProxy {
 			if (responseCode == HttpServletResponse.SC_MOVED_TEMPORARILY) {
 
 				String redirectUrl = loginFormConnection.getHeaderField("Location");
-				LOGGER.debug("logon.3: " + redirectUrl);
+				LOGGER.debug("login.3: " + redirectUrl);
 				if (redirectUrl.startsWith("error.php")) {
 					return false;
 				}

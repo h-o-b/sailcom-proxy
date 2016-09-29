@@ -4,9 +4,9 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
-public class UserPreference implements Serializable {
+public class UserPref implements Serializable /* for MapDb */ {
 
-	private static final long serialVersionUID = 1918628163085421696L;
+	private static final long serialVersionUID = -5997213792851823945L;
 
 	public List<Integer> favoriteShips;
 

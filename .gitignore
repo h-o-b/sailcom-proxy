@@ -4,6 +4,7 @@ ehthumbs.db
 
 #Embedded UI repo
 src/main/webapp/ui/
+docker/
 
 # Folder config file
 Desktop.ini

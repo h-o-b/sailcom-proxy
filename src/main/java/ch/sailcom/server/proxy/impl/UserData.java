@@ -1,9 +1,16 @@
-package ch.sailcom.server.dto;
+package ch.sailcom.server.proxy.impl;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import ch.sailcom.server.dto.Harbor;
+import ch.sailcom.server.dto.Lake;
+import ch.sailcom.server.dto.Ship;
+import ch.sailcom.server.dto.User;
+import ch.sailcom.server.dto.UserInfo;
+import ch.sailcom.server.dto.UserPref;
 
 public class UserData {
 
@@ -11,12 +18,11 @@ public class UserData {
 	private final User user;
 
 	public Map<Integer, Lake> availableLakesById = new HashMap<Integer, Lake>();
-
 	public Map<Integer, Harbor> availableHarborsById = new HashMap<Integer, Harbor>();
-
 	public Map<Integer, Ship> availableShipsById = new HashMap<Integer, Ship>();
+
 	public Map<Integer, Ship> favoriteShipsById = new HashMap<Integer, Ship>();
-	public Map<Integer, Integer> starredShipsById = new HashMap<Integer, Integer>();
+	public Map<Integer, Integer> ratedShipsById = new HashMap<Integer, Integer>();
 
 	public UserData(StaticData staticData, User user) {
 		this.staticData = staticData;
@@ -35,14 +41,14 @@ public class UserData {
 		return userInfo;
 	}
 
-	public UserPreference getUserPreference() {
-		UserPreference userPreference = new UserPreference();
-		userPreference.favoriteShips = new ArrayList<Integer>(this.favoriteShipsById.keySet());
-		userPreference.starredShips = new HashMap<Integer, Integer>(this.starredShipsById);
-		return userPreference;
+	public UserPref getUserPref() {
+		UserPref userPref = new UserPref();
+		userPref.favoriteShips = new ArrayList<Integer>(this.favoriteShipsById.keySet());
+		userPref.starredShips = new HashMap<Integer, Integer>(this.ratedShipsById);
+		return userPref;
 	}
 
-	public void addShip(int shipId) {
+	public void addAvailableShip(int shipId) {
 		Ship ship = this.staticData.getShip(shipId);
 		this.availableShipsById.put(shipId, ship);
 		Harbor harbor = this.staticData.getHarbor(ship.harborId);
@@ -67,11 +73,11 @@ public class UserData {
 
 	public Map<Integer, Integer> rate(Ship ship, int starCount) {
 		if (starCount > 0) {
-			this.starredShipsById.put(ship.id, starCount);
+			this.ratedShipsById.put(ship.id, starCount);
 		} else {
-			this.starredShipsById.remove(ship.id);
+			this.ratedShipsById.remove(ship.id);
 		}
-		return this.starredShipsById;
+		return this.ratedShipsById;
 	}
 
 }

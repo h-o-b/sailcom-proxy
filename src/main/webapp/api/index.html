@@ -95,32 +95,43 @@
 						<td>
 							<a href="#" ng-click="execRequest('user')">User</a>,
 							<a href="#" ng-click="execRequest('user/info')">User Info</a>
-							<a href="#" ng-click="execRequest('user/pref')">User Preferences</a>
 						</td>
 					</tr>
 					<tr>
 						<td>Available</td>
 						<td>
-							<a href="#" ng-click="execRequest('user/lakes')">Lakes</a>,
-							<a href="#" ng-click="execRequest('user/harbors')">Harbors</a>,
-							<a href="#" ng-click="execRequest('user/ships')">Ships</a>
+							<a href="#" ng-click="execRequest('user/availableLakes')">Lakes</a>,
+							<a href="#" ng-click="execRequest('user/availableHarbors')">Harbors</a>,
+							<a href="#" ng-click="execRequest('user/availableShips')">Ships</a>
+						</td>
+					</tr>
+
+					<tr>
+						<td colspan="2"><h2>User Preferences</h2></td>
+					</tr>
+					<tr>
+						<td>User</td>
+						<td>
+							<a href="#" ng-click="execRequest('userPref')">User Preferences</a>
 						</td>
 					</tr>
 					<tr>
 						<td>Favorites</td>
 						<td>
-							<a href="#" ng-click="execRequest('user/ships/147/like')">Like 147</a>,
-							<a href="#" ng-click="execRequest('user/ships/14/like')">Like 14</a>,
-							<a href="#" ng-click="execRequest('user/ships/147/unlike')">Unlike 147</a>,
-							<a href="#" ng-click="execRequest('user/ships/14/unlike')">Unlike 14</a>
+							<a href="#" ng-click="execRequest('userPref/favoriteShips')">Favorite Ships</a>
+							<a href="#" ng-click="execRequest('userPref/ships/147/like')">Like 147</a>,
+							<a href="#" ng-click="execRequest('userPref/ships/14/like')">Like 14</a>,
+							<a href="#" ng-click="execRequest('userPref/ships/147/unlike')">Unlike 147</a>,
+							<a href="#" ng-click="execRequest('userPref/ships/14/unlike')">Unlike 14</a>
 						</td>
 					</tr>
 					<tr>
 						<td>Rating</td>
 						<td>
-							<a href="#" ng-click="execRequest('user/ships/147/rate/2')">Rate 147 @ 2</a>,
-							<a href="#" ng-click="execRequest('user/ships/147/rate/4')">Rate 147 @ 4</a>,
-							<a href="#" ng-click="execRequest('user/ships/147/rate/0')">Unrate 147</a>,
+							<a href="#" ng-click="execRequest('userPref/ratedShips')">Rated Ships</a>
+							<a href="#" ng-click="execRequest('userPref/ships/147/rate/2')">Rate 147 @ 2</a>,
+							<a href="#" ng-click="execRequest('userPref/ships/147/rate/4')">Rate 147 @ 4</a>,
+							<a href="#" ng-click="execRequest('userPref/ships/147/rate/0')">Unrate 147</a>,
 						</td>
 					</tr>
 
