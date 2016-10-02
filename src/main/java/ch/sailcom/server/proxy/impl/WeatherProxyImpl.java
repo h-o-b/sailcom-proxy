@@ -1,7 +1,11 @@
 package ch.sailcom.server.proxy.impl;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.enterprise.context.SessionScoped;
+import javax.inject.Inject;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -14,17 +18,17 @@ import ch.sailcom.server.model.WeatherInfo;
 import ch.sailcom.server.proxy.WeatherProxy;
 import ch.sailcom.server.service.StaticDataService;
 
-public class WeatherProxyImpl implements WeatherProxy {
+@SessionScoped
+public class WeatherProxyImpl implements WeatherProxy, Serializable {
+
+	private static final long serialVersionUID = 2975346262896848672L;
 
 	private static Logger LOGGER = LoggerFactory.getLogger(WeatherProxyImpl.class);
 
 	private static final String WEATHER_BASE_URL = "https://www.meteoblue.com/de/schweiz/wetter-";
 
-	private final StaticDataService staticDataService;
-
-	public WeatherProxyImpl(StaticDataService staticDataService) {
-		this.staticDataService = staticDataService;
-	}
+	@Inject
+	private StaticDataService staticDataService;
 
 	@Override
 	public List<WeatherInfo> getWeatherInfo(int harborId, boolean isDet) {

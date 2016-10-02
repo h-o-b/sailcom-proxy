@@ -12,8 +12,6 @@ public interface SessionService extends Service {
 
 	User getUser();
 
-	<T extends Service> T getService(Class<T> serviceClass);
-
 	void logout();
 
 }

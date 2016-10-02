@@ -1,9 +1,12 @@
 package ch.sailcom.server.proxy.impl;
 
 import java.io.File;
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.concurrent.ConcurrentMap;
+
+import javax.enterprise.context.SessionScoped;
 
 import org.mapdb.DB;
 import org.mapdb.DBMaker;
@@ -14,9 +17,12 @@ import ch.sailcom.server.model.User;
 import ch.sailcom.server.model.UserPref;
 import ch.sailcom.server.proxy.UserPrefProxy;
 
-public class UserPrefProxyImpl implements UserPrefProxy {
+@SessionScoped
+public class UserPrefProxyImpl implements UserPrefProxy, Serializable {
 
-	private static Logger LOGGER = LoggerFactory.getLogger(UserPrefProxyImpl.class);
+	private static final long serialVersionUID = -7964478087782131052L;
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(UserPrefProxyImpl.class);
 
 	// private static final String DB_FILE = "/volume1/@appstore/Tomcat7/src/webapps/sailcom-proxy/sailcom-proxy.db";
 	private static final String DB_FILE = "d:/data/sailcom/sailcom-proxy.db";

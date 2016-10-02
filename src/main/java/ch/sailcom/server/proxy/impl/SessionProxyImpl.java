@@ -2,15 +2,18 @@ package ch.sailcom.server.proxy.impl;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.Serializable;
 import java.net.CookieHandler;
 import java.net.CookieManager;
 import java.net.CookieStore;
 import java.net.HttpCookie;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.enterprise.context.SessionScoped;
 import javax.net.ssl.HttpsURLConnection;
 import javax.servlet.http.HttpServletResponse;
 
@@ -23,7 +26,10 @@ import org.slf4j.LoggerFactory;
 import ch.sailcom.server.model.User;
 import ch.sailcom.server.proxy.SessionProxy;
 
-public class SessionProxyImpl implements SessionProxy {
+@SessionScoped
+public class SessionProxyImpl implements SessionProxy, Serializable {
+
+	private static final long serialVersionUID = -7247425922024166425L;
 
 	private static Logger LOGGER = LoggerFactory.getLogger(SessionProxyImpl.class);
 
@@ -46,6 +52,7 @@ public class SessionProxyImpl implements SessionProxy {
 
 	public SessionProxyImpl() {
 		synchronized (SERVER_SESSION_COOKIE) {
+			LOGGER.debug("SessionProxyImpl()\n{}", Arrays.toString(new Throwable().getStackTrace()));
 			if (cookieManager == null) {
 				cookieManager = new CookieManager();
 				cookieStore = cookieManager.getCookieStore();

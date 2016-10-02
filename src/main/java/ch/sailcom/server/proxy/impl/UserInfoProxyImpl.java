@@ -1,8 +1,12 @@
 package ch.sailcom.server.proxy.impl;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.annotation.PostConstruct;
+import javax.enterprise.context.SessionScoped;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -13,7 +17,10 @@ import org.slf4j.LoggerFactory;
 
 import ch.sailcom.server.proxy.UserInfoProxy;
 
-public class UserInfoProxyImpl implements UserInfoProxy {
+@SessionScoped
+public class UserInfoProxyImpl implements UserInfoProxy, Serializable {
+
+	private static final long serialVersionUID = -1981902868405012738L;
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(UserInfoProxyImpl.class);
 
@@ -21,9 +28,7 @@ public class UserInfoProxyImpl implements UserInfoProxy {
 
 	private final List<Integer> availableShips = new ArrayList<Integer>();
 
-	public UserInfoProxyImpl() {
-	}
-
+	@PostConstruct
 	private void loadAvailableShips() {
 
 		// @formatter:off
@@ -76,7 +81,6 @@ public class UserInfoProxyImpl implements UserInfoProxy {
 
 	@Override
 	public List<Integer> getAvailableShips() {
-		loadAvailableShips();
 		return this.availableShips;
 	}
 

@@ -1,36 +1,34 @@
 package ch.sailcom.server.service.impl;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.io.Serializable;
+import java.util.Arrays;
+
+import javax.enterprise.context.SessionScoped;
+import javax.enterprise.inject.spi.BeanManager;
+import javax.inject.Inject;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ch.sailcom.server.model.User;
 import ch.sailcom.server.proxy.SessionProxy;
-import ch.sailcom.server.proxy.impl.BookingProxyImpl;
-import ch.sailcom.server.proxy.impl.SessionProxyImpl;
-import ch.sailcom.server.proxy.impl.StaticDataProxyImpl;
-import ch.sailcom.server.proxy.impl.UserInfoProxyImpl;
-import ch.sailcom.server.proxy.impl.UserPrefProxyImpl;
-import ch.sailcom.server.proxy.impl.WeatherProxyImpl;
-import ch.sailcom.server.service.BookingService;
-import ch.sailcom.server.service.Service;
 import ch.sailcom.server.service.SessionService;
-import ch.sailcom.server.service.StaticDataService;
-import ch.sailcom.server.service.UserService;
-import ch.sailcom.server.service.WeatherService;
 
-public class SessionServiceImpl implements SessionService {
+@SessionScoped
+public class SessionServiceImpl implements SessionService, Serializable {
+
+	private static final long serialVersionUID = -3695176711275632182L;
 
 	private static Logger LOGGER = LoggerFactory.getLogger(SessionServiceImpl.class);
 
-	private final SessionProxy sessionProxy;
+	@Inject
+	private BeanManager manager;
 
-	private Map<Class<? extends Service>, Service> serviceMap = new HashMap<Class<? extends Service>, Service>();
+	@Inject
+	private SessionProxy sessionProxy;
 
 	public SessionServiceImpl() {
-		this.sessionProxy = new SessionProxyImpl();
+		LOGGER.debug("SessionServiceImpl(): {}\n{}", manager, Arrays.toString(new Throwable().getStackTrace()));
 	}
 
 	@Override
@@ -45,29 +43,8 @@ public class SessionServiceImpl implements SessionService {
 
 	@Override
 	public boolean login(String user, String pwd) {
-
 		LOGGER.debug("login({})", user);
-
-		if (this.sessionProxy.login(user, pwd)) {
-
-			StaticDataService staticDataService = new StaticDataServiceImpl(new StaticDataProxyImpl());
-			this.serviceMap.put(StaticDataService.class, staticDataService);
-
-			UserService userService = new UserServiceImpl(this.getUser(), staticDataService, new UserInfoProxyImpl(), new UserPrefProxyImpl());
-			this.serviceMap.put(UserService.class, userService);
-
-			BookingService bookingService = new BookingServiceImpl(new BookingProxyImpl(staticDataService));
-			this.serviceMap.put(BookingService.class, bookingService);
-
-			WeatherService weatherService = new WeatherServiceImpl(new WeatherProxyImpl(staticDataService));
-			this.serviceMap.put(WeatherService.class, weatherService);
-
-			return true;
-
-		}
-
-		return false;
-
+		return this.sessionProxy.login(user, pwd);
 	}
 
 	@Override
@@ -78,12 +55,6 @@ public class SessionServiceImpl implements SessionService {
 	@Override
 	public void logout() {
 		this.sessionProxy.logout();
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public <T extends Service> T getService(Class<T> serviceClass) {
-		return (T) this.serviceMap.get(serviceClass);
 	}
 
 }

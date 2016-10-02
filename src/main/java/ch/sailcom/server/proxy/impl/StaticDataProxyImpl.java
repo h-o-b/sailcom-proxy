@@ -7,6 +7,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.PostConstruct;
+import javax.enterprise.context.ApplicationScoped;
+
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -20,6 +23,7 @@ import ch.sailcom.server.model.Lake;
 import ch.sailcom.server.model.Ship;
 import ch.sailcom.server.proxy.StaticDataProxy;
 
+@ApplicationScoped
 public class StaticDataProxyImpl implements StaticDataProxy {
 
 	private static Logger LOGGER = LoggerFactory.getLogger(StaticDataProxyImpl.class);
@@ -27,11 +31,20 @@ public class StaticDataProxyImpl implements StaticDataProxy {
 	private static final String STATIC_DATA_URL = "http://www.sailcomnet.ch/liste.php";
 	private static final String MAIN_DIV = "Hauptteil";
 
-	private static final Map<Integer, Lake> lakesById = new HashMap<Integer, Lake>();
-	private static final Map<Integer, Harbor> harborsById = new HashMap<Integer, Harbor>();
-	private static final Map<Integer, Ship> shipsById = new HashMap<Integer, Ship>();
+	private final Map<Integer, Lake> lakesById = new HashMap<Integer, Lake>();
+	private final Map<Integer, Harbor> harborsById = new HashMap<Integer, Harbor>();
+	private final Map<Integer, Ship> shipsById = new HashMap<Integer, Ship>();
 
-	private static void loadStaticData() {
+	public StaticDataProxyImpl() {
+		LOGGER.debug("StaticDataProxyImpl()");
+	}
+
+	@PostConstruct
+	private void loadStaticData() {
+
+		if (shipsById.size() > 0) {
+			return;
+		}
 
 		Map<String, Lake> lakesByName = new HashMap<String, Lake>();
 
@@ -162,25 +175,16 @@ public class StaticDataProxyImpl implements StaticDataProxy {
 
 	@Override
 	public List<Lake> getLakes() {
-		if (lakesById.size() == 0) {
-			loadStaticData();
-		}
 		return new ArrayList<Lake>(lakesById.values());
 	}
 
 	@Override
 	public List<Harbor> getHarbors() {
-		if (lakesById.size() == 0) {
-			loadStaticData();
-		}
 		return new ArrayList<Harbor>(harborsById.values());
 	}
 
 	@Override
 	public List<Ship> getShips() {
-		if (lakesById.size() == 0) {
-			loadStaticData();
-		}
 		return new ArrayList<Ship>(shipsById.values());
 	}
 

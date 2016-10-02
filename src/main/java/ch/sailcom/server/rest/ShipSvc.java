@@ -17,6 +17,9 @@ import ch.sailcom.server.model.Ship;
 import ch.sailcom.server.rest.util.Authenticated;
 import ch.sailcom.server.rest.util.SvcUtil;
 import ch.sailcom.server.service.StaticDataService;
+import ch.sailcom.server.service.weld.AppBean;
+import ch.sailcom.server.service.weld.RequestBean;
+import ch.sailcom.server.service.weld.SessionBean;
 
 /**
  * Ship Service
@@ -24,6 +27,15 @@ import ch.sailcom.server.service.StaticDataService;
 @Path("/ships")
 @Authenticated
 public class ShipSvc {
+
+	@Inject
+	AppBean appBean;
+
+	@Inject
+	SessionBean sessionBean;
+
+	@Inject
+	RequestBean requestBean;
 
 	@Inject
 	StaticDataService staticDataService;

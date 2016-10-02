@@ -1,5 +1,6 @@
 package ch.sailcom.server.proxy.impl;
 
+import java.io.Serializable;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -7,6 +8,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import javax.enterprise.context.SessionScoped;
+import javax.inject.Inject;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -21,9 +25,12 @@ import ch.sailcom.server.model.Trip;
 import ch.sailcom.server.proxy.BookingProxy;
 import ch.sailcom.server.service.StaticDataService;
 
-public class BookingProxyImpl implements BookingProxy {
+@SessionScoped
+public class BookingProxyImpl implements BookingProxy, Serializable {
 
-	private static Logger LOGGER = LoggerFactory.getLogger(BookingProxyImpl.class);
+	private static final long serialVersionUID = -8927556779470550682L;
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(BookingProxyImpl.class);
 
 	private static final String TRIPS_BASE_URL = "https://www.sailcomnet.ch/net/res_edit.php?lng=de";
 	private static final DateFormat tf = new SimpleDateFormat("dd.MM.yy HH:mm");
@@ -33,11 +40,8 @@ public class BookingProxyImpl implements BookingProxy {
 	private static final DateFormat df = new SimpleDateFormat("dd.MM.yyyy");
 	private static final DateFormat jdf = new SimpleDateFormat("yyyy-MM-dd");
 
-	private final StaticDataService staticDataService;
-
-	public BookingProxyImpl(StaticDataService staticDataService) {
-		this.staticDataService = staticDataService;
-	}
+	@Inject
+	private StaticDataService staticDataService;
 
 	@Override
 	public List<Trip> getTrips() {

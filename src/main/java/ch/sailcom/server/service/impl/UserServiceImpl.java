@@ -1,10 +1,15 @@
 package ch.sailcom.server.service.impl;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import javax.annotation.PostConstruct;
+import javax.enterprise.context.SessionScoped;
+import javax.inject.Inject;
 
 import ch.sailcom.server.model.Ship;
 import ch.sailcom.server.model.User;
@@ -12,37 +17,56 @@ import ch.sailcom.server.model.UserInfo;
 import ch.sailcom.server.model.UserPref;
 import ch.sailcom.server.proxy.UserInfoProxy;
 import ch.sailcom.server.proxy.UserPrefProxy;
+import ch.sailcom.server.service.SessionService;
 import ch.sailcom.server.service.StaticDataService;
 import ch.sailcom.server.service.UserService;
 
-public class UserServiceImpl implements UserService {
+@SessionScoped
+public class UserServiceImpl implements UserService, Serializable {
 
-	private final User user;
+	private static final long serialVersionUID = -8398228446420294396L;
 
-	private final UserInfoProxy userInfoProxy;
+	@Inject
+	private StaticDataService staticDataService;
+
+	@Inject
+	private SessionService sessionService;
+
+	@Inject
+	private UserInfoProxy userInfoProxy;
+
 	private List<Integer> availableLakes = new ArrayList<Integer>();
 	private List<Integer> availableHarbors = new ArrayList<Integer>();
 	private List<Integer> availableShips = new ArrayList<Integer>();
 
-	private final UserPrefProxy userPrefProxy;
+	@Inject
+	private UserPrefProxy userPrefProxy;
+
 	private UserPref userPref;
 
-	public UserServiceImpl(User user, StaticDataService staticData, UserInfoProxy userInfoProxy, UserPrefProxy userPrefProxy) {
-		this.user = user;
-		this.userInfoProxy = userInfoProxy;
-		this.userPrefProxy = userPrefProxy;
+	public UserServiceImpl() {
+	}
+
+	@PostConstruct
+	private void init() {
+
 		this.availableShips = this.userInfoProxy.getAvailableShips();
+
 		this.availableHarbors = this.availableShips.stream().map((shipId) -> {
-			return staticData.getShip(shipId).harborId;
+			return staticDataService.getShip(shipId).harborId;
 		}).distinct().collect(Collectors.toList());
+
 		this.availableLakes = this.availableHarbors.stream().map((harborId) -> {
-			return staticData.getHarbor(harborId).lakeId;
+			return staticDataService.getHarbor(harborId).lakeId;
 		}).distinct().collect(Collectors.toList());
+
+		this.userPref = this.userPrefProxy.getUserPref(this.getUser());
+
 	}
 
 	@Override
 	public User getUser() {
-		return this.user;
+		return this.sessionService.getUser();
 	}
 
 	@Override
@@ -56,9 +80,6 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public UserPref getUserPref() {
-		if (this.userPref == null) {
-			this.userPref = this.userPrefProxy.getUserPref(this.user);
-		}
 		return this.userPref;
 	}
 
@@ -85,14 +106,14 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public Set<Integer> like(Ship ship) {
 		this.getUserPref().favoriteShips.add(ship.id);
-		this.userPrefProxy.setUserPref(this.user, this.userPref);
+		this.userPrefProxy.setUserPref(this.getUser(), this.userPref);
 		return this.getFavoriteShips();
 	}
 
 	@Override
 	public Set<Integer> unlike(Ship ship) {
 		this.getUserPref().favoriteShips.remove(ship.id);
-		this.userPrefProxy.setUserPref(this.user, this.userPref);
+		this.userPrefProxy.setUserPref(this.getUser(), this.userPref);
 		return this.getFavoriteShips();
 	}
 
@@ -108,7 +129,7 @@ public class UserServiceImpl implements UserService {
 		} else {
 			this.getUserPref().ratedShips.remove(ship.id);
 		}
-		this.userPrefProxy.setUserPref(this.user, this.userPref);
+		this.userPrefProxy.setUserPref(this.getUser(), this.userPref);
 		return this.getRatedShips();
 	}
 
