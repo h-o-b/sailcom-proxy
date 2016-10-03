@@ -1,4 +1,4 @@
-package ch.sailcom.server.rest;
+package ch.sailcom.server.proxy.impl;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -12,20 +12,20 @@ import org.junit.Test;
 import ch.sailcom.server.model.Harbor;
 import ch.sailcom.server.model.Lake;
 import ch.sailcom.server.model.Ship;
-import ch.sailcom.server.proxy.StaticDataProxy;
-import ch.sailcom.server.proxy.impl.StaticDataProxyImpl;
+import ch.sailcom.server.proxy.impl.util.ProxyTest;
 import ch.sailcom.server.rest.dto.SessionInfo;
-import ch.sailcom.server.rest.util.ProxyTest;
 
 public class StaticDataProxyTest extends ProxyTest {
 
-	static StaticDataProxy staticDataProxy;
+	static StaticDataProxyImpl staticDataProxy;
 
 	@BeforeClass
 	public static void openSession() {
 		SessionInfo sessionInfo = login();
 		assertEquals("user id", "82219", sessionInfo.user.id);
 		assertEquals("user name", "Hannes Brunner", sessionInfo.user.name);
+		staticDataProxy = new StaticDataProxyImpl();
+		staticDataProxy.loadStaticData();
 	}
 
 	@AfterClass
@@ -35,7 +35,6 @@ public class StaticDataProxyTest extends ProxyTest {
 
 	@Test
 	public void testLakes() {
-		staticDataProxy = new StaticDataProxyImpl();
 		List<Lake> lakes = staticDataProxy.getLakes();
 		assertEquals("17 lakes", 17, lakes.size());
 		Lake lake = lakes.stream().filter(l -> l.id == 2).findFirst().get();

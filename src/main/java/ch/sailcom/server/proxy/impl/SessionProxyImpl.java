@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
 import javax.net.ssl.HttpsURLConnection;
 import javax.servlet.http.HttpServletResponse;
@@ -50,9 +51,10 @@ public class SessionProxyImpl implements SessionProxy, Serializable {
 	private User user = null;
 	private Map<Class<?>, Object> proxyMap = new HashMap<Class<?>, Object>();
 
-	public SessionProxyImpl() {
-		synchronized (SERVER_SESSION_COOKIE) {
-			LOGGER.debug("SessionProxyImpl()\n{}", Arrays.toString(new Throwable().getStackTrace()));
+	@PostConstruct
+	private void init() {
+		synchronized (LOGGER) {
+			LOGGER.debug("SessionProxyImpl.init\n{}", Arrays.toString(new Throwable().getStackTrace()).replace(",", "\n"));
 			if (cookieManager == null) {
 				cookieManager = new CookieManager();
 				cookieStore = cookieManager.getCookieStore();

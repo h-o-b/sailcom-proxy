@@ -40,7 +40,7 @@ public class StaticDataProxyImpl implements StaticDataProxy {
 	}
 
 	@PostConstruct
-	private void loadStaticData() {
+	void loadStaticData() {
 
 		if (shipsById.size() > 0) {
 			return;

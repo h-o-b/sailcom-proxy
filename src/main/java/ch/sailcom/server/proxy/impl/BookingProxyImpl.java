@@ -93,8 +93,7 @@ public class BookingProxyImpl implements BookingProxy, Serializable {
 
 		try {
 
-			String url = TRIPS_BASE_URL;
-			Document doc = Jsoup.connect(url).get();
+			Document doc = Jsoup.connect(TRIPS_BASE_URL).get();
 
 			if (doc.select("input[name=txtMitgliedernummer]").first() != null) {
 				throw new NoSessionException();

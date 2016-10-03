@@ -1,8 +1,8 @@
-package ch.sailcom.server.rest.util;
+package ch.sailcom.server.proxy.impl.util;
 
 import java.util.Base64;
 
-public class Encryptor {
+public class Obfuscator {
 
 	public static String encrypt(String plain) {
 		String b64encoded = Base64.getEncoder().encodeToString(plain.getBytes());

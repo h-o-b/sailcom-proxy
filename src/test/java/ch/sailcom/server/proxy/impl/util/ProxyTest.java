@@ -1,4 +1,4 @@
-package ch.sailcom.server.rest.util;
+package ch.sailcom.server.proxy.impl.util;
 
 import ch.sailcom.server.proxy.SessionProxy;
 import ch.sailcom.server.proxy.impl.SessionProxyImpl;
@@ -13,7 +13,7 @@ public class ProxyTest {
 
 	public static SessionInfo login() {
 		sessionProxy = new SessionProxyImpl();
-		if (sessionProxy.login(USER, Encryptor.decrypt(PWD))) {
+		if (sessionProxy.login(USER, Obfuscator.decrypt(PWD))) {
 			return new SessionInfo(sessionProxy.getSessionId(), sessionProxy.getUser());
 		}
 		return null;
