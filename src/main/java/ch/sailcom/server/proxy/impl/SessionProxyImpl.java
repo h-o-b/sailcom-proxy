@@ -51,7 +51,7 @@ public class SessionProxyImpl implements SessionProxy, Serializable {
 	private Map<Class<?>, Object> proxyMap = new HashMap<Class<?>, Object>();
 
 	@PostConstruct
-	private void init() {
+	void init() {
 		synchronized (LOGGER) {
 			LOGGER.debug("SessionProxyImpl.init");
 			if (cookieManager == null) {

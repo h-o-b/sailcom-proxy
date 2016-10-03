@@ -36,7 +36,7 @@ public class StaticDataProxyImpl implements StaticDataProxy {
 	private final Map<Integer, Ship> shipsById = new HashMap<Integer, Ship>();
 
 	@PostConstruct
-	void loadStaticData() {
+	void init() {
 
 		if (shipsById.size() > 0) {
 			return;
