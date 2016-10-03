@@ -8,7 +8,6 @@ import java.net.CookieManager;
 import java.net.CookieStore;
 import java.net.HttpCookie;
 import java.net.URL;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -54,7 +53,7 @@ public class SessionProxyImpl implements SessionProxy, Serializable {
 	@PostConstruct
 	private void init() {
 		synchronized (LOGGER) {
-			LOGGER.debug("SessionProxyImpl.init\n{}", Arrays.toString(new Throwable().getStackTrace()).replace(",", "\n"));
+			LOGGER.debug("SessionProxyImpl.init");
 			if (cookieManager == null) {
 				cookieManager = new CookieManager();
 				cookieStore = cookieManager.getCookieStore();

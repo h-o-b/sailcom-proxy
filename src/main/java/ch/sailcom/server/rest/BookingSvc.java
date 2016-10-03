@@ -1,7 +1,6 @@
 package ch.sailcom.server.rest;
 
 import java.io.IOException;
-import java.net.HttpURLConnection;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -14,9 +13,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
-import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 
 import ch.sailcom.server.model.Booking;
 import ch.sailcom.server.rest.util.Authenticated;
@@ -44,11 +41,8 @@ public class BookingSvc {
 	public List<Booking> getBookings(@QueryParam("shipId") Integer shipId, @QueryParam("date") String date, @QueryParam("nofWeeks") Integer nofWeeks) throws IOException {
 
 		/* Validate Service Input */
-		if (shipId == null) {
-			throw new WebApplicationException(Response.status(HttpURLConnection.HTTP_BAD_REQUEST).entity(SvcUtil.getErrorEntity("shipId parameter is mandatory")).build());
-		} else if (staticDataService.getShip(shipId) == null) {
-			throw new WebApplicationException(Response.status(HttpURLConnection.HTTP_NOT_FOUND).entity(SvcUtil.getErrorEntity("ship not found")).build());
-		}
+		SvcUtil.check(shipId != null, "shipId parameter is mandatory");
+		SvcUtil.check(staticDataService.getShip(shipId) != null, "ship not found");
 
 		nofWeeks = nofWeeks == null ? 1 : nofWeeks;
 		Date currDate = null;

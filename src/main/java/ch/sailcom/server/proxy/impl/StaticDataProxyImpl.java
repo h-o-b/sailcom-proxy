@@ -35,10 +35,6 @@ public class StaticDataProxyImpl implements StaticDataProxy {
 	private final Map<Integer, Harbor> harborsById = new HashMap<Integer, Harbor>();
 	private final Map<Integer, Ship> shipsById = new HashMap<Integer, Ship>();
 
-	public StaticDataProxyImpl() {
-		LOGGER.debug("StaticDataProxyImpl()");
-	}
-
 	@PostConstruct
 	void loadStaticData() {
 

@@ -1,10 +1,8 @@
 package ch.sailcom.server.service.impl;
 
 import java.io.Serializable;
-import java.util.Arrays;
 
 import javax.enterprise.context.SessionScoped;
-import javax.enterprise.inject.spi.BeanManager;
 import javax.inject.Inject;
 
 import org.slf4j.Logger;
@@ -22,14 +20,7 @@ public class SessionServiceImpl implements SessionService, Serializable {
 	private static Logger LOGGER = LoggerFactory.getLogger(SessionServiceImpl.class);
 
 	@Inject
-	private BeanManager manager;
-
-	@Inject
 	private SessionProxy sessionProxy;
-
-	public SessionServiceImpl() {
-		LOGGER.debug("SessionServiceImpl(): {}\n{}", manager, Arrays.toString(new Throwable().getStackTrace()));
-	}
 
 	@Override
 	public String getSessionId() {

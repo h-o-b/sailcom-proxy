@@ -2,7 +2,7 @@ package ch.sailcom.server.model;
 
 import java.io.Serializable;
 
-public class User implements Serializable {
+public class User implements Serializable /* CDI */ {
 
 	private static final long serialVersionUID = 6017294354632164167L;
 

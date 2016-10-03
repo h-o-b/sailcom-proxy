@@ -1,7 +1,6 @@
 package ch.sailcom.server.rest;
 
 import java.io.IOException;
-import java.net.HttpURLConnection;
 import java.util.Map;
 import java.util.Set;
 
@@ -10,9 +9,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 
 import ch.sailcom.server.model.UserPref;
 import ch.sailcom.server.rest.util.Authenticated;
@@ -57,9 +54,7 @@ public class UserPrefSvc {
 	@Path("/ships/{shipId}/like")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Set<Integer> likeShip(@PathParam("shipId") Integer shipId) throws IOException {
-		if (shipId == null) {
-			throw new WebApplicationException(Response.status(HttpURLConnection.HTTP_BAD_REQUEST).entity(SvcUtil.getErrorEntity("shipId parameter is mandatory")).build());
-		}
+		SvcUtil.check(shipId != null, "shipId parameter is mandatory");
 		return userService.like(staticDataService.getShip(shipId));
 	}
 
@@ -67,9 +62,7 @@ public class UserPrefSvc {
 	@Path("/ships/{shipId}/unlike")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Set<Integer> unlikeShip(@PathParam("shipId") Integer shipId) throws IOException {
-		if (shipId == null) {
-			throw new WebApplicationException(Response.status(HttpURLConnection.HTTP_BAD_REQUEST).entity(SvcUtil.getErrorEntity("shipId parameter is mandatory")).build());
-		}
+		SvcUtil.check(shipId != null, "shipId parameter is mandatory");
 		return userService.unlike(staticDataService.getShip(shipId));
 	}
 
@@ -77,11 +70,8 @@ public class UserPrefSvc {
 	@Path("/ships/{shipId}/rate/{starCount}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Map<Integer, Integer> rateShip(@PathParam("shipId") Integer shipId, @PathParam("starCount") Integer starCount) throws IOException {
-		if (shipId == null) {
-			throw new WebApplicationException(Response.status(HttpURLConnection.HTTP_BAD_REQUEST).entity(SvcUtil.getErrorEntity("shipId parameter is mandatory")).build());
-		} else if (starCount == null) {
-			throw new WebApplicationException(Response.status(HttpURLConnection.HTTP_BAD_REQUEST).entity(SvcUtil.getErrorEntity("starCount parameter is mandatory")).build());
-		}
+		SvcUtil.check(shipId != null, "shipId parameter is mandatory");
+		SvcUtil.check(starCount != null, "starCount parameter is mandatory");
 		return userService.rate(staticDataService.getShip(shipId), starCount);
 	}
 

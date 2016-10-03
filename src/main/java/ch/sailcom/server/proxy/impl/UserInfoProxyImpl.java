@@ -29,7 +29,7 @@ public class UserInfoProxyImpl implements UserInfoProxy, Serializable {
 	private final List<Integer> availableShips = new ArrayList<Integer>();
 
 	@PostConstruct
-	private void loadAvailableShips() {
+	void loadAvailableShips() {
 
 		// @formatter:off
 		/*

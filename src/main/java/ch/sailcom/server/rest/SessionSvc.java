@@ -38,21 +38,15 @@ public class SessionSvc {
 
 		try {
 
-			if (user == null) {
-				throw new WebApplicationException(Response.status(HttpURLConnection.HTTP_BAD_REQUEST).entity(SvcUtil.getErrorEntity("user parameter is mandatory")).build());
-			} else if (pwd == null) {
-				throw new WebApplicationException(Response.status(HttpURLConnection.HTTP_BAD_REQUEST).entity(SvcUtil.getErrorEntity("pwd parameter is mandatory")).build());
-			}
+			SvcUtil.check(user != null, "user parameter is mandatory");
+			SvcUtil.check(pwd != null, "pwd parameter is mandatory");
 
 			if (sessionService.isLoggedIn()) {
 				return new SessionInfo(sessionService.getSessionId(), sessionService.getUser());
 			}
 
 			LOGGER.info("User {} logging in ...", user);
-			if (!sessionService.login(user, pwd)) {
-				LOGGER.info("User {} login failed", user);
-				throw new WebApplicationException(Response.status(HttpURLConnection.HTTP_UNAUTHORIZED).entity(SvcUtil.getErrorEntity("login denied")).build());
-			}
+			SvcUtil.check(sessionService.login(user, pwd), "login denied", HttpURLConnection.HTTP_UNAUTHORIZED);
 
 			LOGGER.info("User {} successfully logged in", user);
 			return new SessionInfo(sessionService.getSessionId(), sessionService.getUser());

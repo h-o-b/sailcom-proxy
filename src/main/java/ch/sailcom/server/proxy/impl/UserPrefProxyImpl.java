@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.concurrent.ConcurrentMap;
 
+import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
 
 import org.mapdb.DB;
@@ -31,20 +32,23 @@ public class UserPrefProxyImpl implements UserPrefProxy, Serializable {
 	private static DB database;
 	private static ConcurrentMap<String, UserPref> userPrefMap;
 
+	@PostConstruct
 	@SuppressWarnings("unchecked")
-	private void openDatabase() {
+	void init() {
+
+		if (database != null) {
+			return;
+		}
+
 		File dbFile = new File(DB_FILE);
 		LOGGER.debug("Opening database file {}", dbFile.getAbsolutePath());
+
 		database = DBMaker.fileDB(dbFile).transactionEnable().closeOnJvmShutdown().make();
 		LOGGER.debug("Opening database hashMap {}", USER_INFO_MAP);
+
 		userPrefMap = (ConcurrentMap<String, UserPref>) database.hashMap(USER_INFO_MAP).createOrOpen();
 		LOGGER.debug("Opening database done");
-	}
 
-	public UserPrefProxyImpl() {
-		if (database == null) {
-			this.openDatabase();
-		}
 	}
 
 	@Override
@@ -60,6 +64,7 @@ public class UserPrefProxyImpl implements UserPrefProxy, Serializable {
 			userPref.ratedShips = new HashMap<Integer, Integer>();
 		}
 
+		LOGGER.debug("getUserPref({}): {}", user.id, userPref);
 		return userPref;
 
 	}
