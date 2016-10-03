@@ -29,7 +29,7 @@ public class SessionSvc {
 	private static Logger LOGGER = LoggerFactory.getLogger(SessionSvc.class);
 
 	@Inject
-	SessionService session;
+	SessionService sessionService;
 
 	@GET
 	@Path("/login")
@@ -44,18 +44,18 @@ public class SessionSvc {
 				throw new WebApplicationException(Response.status(HttpURLConnection.HTTP_BAD_REQUEST).entity(SvcUtil.getErrorEntity("pwd parameter is mandatory")).build());
 			}
 
-			if (session.isLoggedIn()) {
-				return new SessionInfo(session.getSessionId(), session.getUser());
+			if (sessionService.isLoggedIn()) {
+				return new SessionInfo(sessionService.getSessionId(), sessionService.getUser());
 			}
 
 			LOGGER.info("User {} logging in ...", user);
-			if (!session.login(user, pwd)) {
+			if (!sessionService.login(user, pwd)) {
 				LOGGER.info("User {} login failed", user);
 				throw new WebApplicationException(Response.status(HttpURLConnection.HTTP_UNAUTHORIZED).entity(SvcUtil.getErrorEntity("login denied")).build());
 			}
 
 			LOGGER.info("User {} successfully logged in", user);
-			return new SessionInfo(session.getSessionId(), session.getUser());
+			return new SessionInfo(sessionService.getSessionId(), sessionService.getUser());
 
 		} catch (Exception e) {
 			LOGGER.error("login crashed", e);
@@ -71,8 +71,8 @@ public class SessionSvc {
 	public void logout() throws IOException {
 
 		try {
-			if (session.isLoggedIn()) {
-				session.logout();
+			if (sessionService.isLoggedIn()) {
+				sessionService.logout();
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

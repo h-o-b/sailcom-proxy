@@ -11,17 +11,71 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * Servlet implementation class LakeSvc
+ * Servlet implementation
  */
-@WebServlet("/http/*")
+@WebServlet("/test/http/*")
 public class HttpSvc extends HttpServlet {
 
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = -3244607004176369657L;
 
-	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
-	 */
+	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+		response.setContentType("application/json");
+
+		PrintWriter writer = response.getWriter();
+
+		writer.println("{");
+
+		writer.println(" \"addr\": \"" + request.getLocalAddr() + "\",");
+		Enumeration<String> attrs = request.getAttributeNames();
+		int i = 0;
+		while (attrs.hasMoreElements()) {
+			String a = attrs.nextElement();
+			writer.println(" \"attr[" + i + "]\": \"" + a + " = " + request.getAttribute(a) + "\",");
+			i += 1;
+		}
+		writer.println(" \"contentLength\": \"" + request.getContentLength() + "\",");
+		writer.println(" \"contextPath\": \"" + request.getContextPath() + "\",");
+		writer.println(" \"contentType\": \"" + request.getContentType() + "\",");
+		for (i = 0; i < request.getCookies().length; i++) {
+			writer.println(" \"cookie[" + i + "]\": \"domain: " + request.getCookies()[i].getDomain() + ", path: " + request.getCookies()[i].getPath() + ", name: " + request.getCookies()[i].getName()
+					+ ", value: " + request.getCookies()[i].getValue() + "\",");
+		}
+		writer.println(" \"encoding\": \"" + request.getCharacterEncoding() + "\",");
+		writer.println(" \"method\": \"" + request.getMethod() + "\",");
+		writer.println(" \"name\": \"" + request.getLocalName() + "\",");
+		Enumeration<String> pars = request.getParameterNames();
+		i = 0;
+		while (pars.hasMoreElements()) {
+			String p = pars.nextElement();
+			writer.println(" \"param[" + i + "]\": \"" + p + " = " + request.getParameter(p) + "\",");
+			i += 1;
+		}
+		writer.println(" \"pathInfo\": \"" + request.getPathInfo() + "\",");
+		writer.println(" \"pathTranslated\": \"" + request.getPathTranslated() + "\",");
+		writer.println(" \"port\": \"" + request.getLocalPort() + "\",");
+		writer.println(" \"protocol\": \"" + request.getProtocol() + "\",");
+		writer.println(" \"queryString\": \"" + request.getQueryString() + "\",");
+		writer.println(" \"remoteAddr\": \"" + request.getRemoteAddr() + "\",");
+		writer.println(" \"remoteHost\": \"" + request.getRemoteHost() + "\",");
+		writer.println(" \"remotePort\": \"" + request.getRemotePort() + "\",");
+		writer.println(" \"remoteUser\": \"" + request.getRemoteUser() + "\",");
+		writer.println(" \"requestedSessionId\": \"" + request.getRequestedSessionId() + "\",");
+		writer.println(" \"requestUri\": \"" + request.getRequestURI() + "\",");
+		writer.println(" \"requestUrl\": \"" + request.getRequestURL().toString() + "\",");
+		writer.println(" \"scheme\": \"" + request.getScheme() + "\",");
+		writer.println(" \"serverName\": \"" + request.getServerName() + "\",");
+		writer.println(" \"serverPort\": \"" + request.getServerPort() + "\",");
+		writer.println(" \"servletPath\": \"" + request.getServletPath() + "\",");
+		writer.println(" \"session\": \"" + request.getSession() + "\"");
+
+		writer.println("}");
+
+		writer.close();
+	}
+
+	protected void doGetHtml(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
 		response.setContentType("text/html");
 
@@ -68,15 +122,16 @@ public class HttpSvc extends HttpServlet {
 			writer.println("<li>param: " + p + " = " + request.getParameter(p) + "</li>");
 		}
 		for (int i = 0; i < request.getCookies().length; i++) {
-			writer.println("<li>cookie: " + request.getCookies()[i].getDomain() + ", " + request.getCookies()[i].getPath() + ", " + request.getCookies()[i].getName() + ", " + request.getCookies()[i].getValue() + ", " + "</li>");
+			writer.println("<li>cookie: " + request.getCookies()[i].getDomain() + ", " + request.getCookies()[i].getPath() + ", " + request.getCookies()[i].getName() + ", "
+					+ request.getCookies()[i].getValue() + ", " + "</li>");
 		}
 		writer.println("</ul>");
 
 		writer.println("</body>");
 		writer.println("</html>");
 
-//		Cookie c = new Cookie("c" + request.getCookies().length, "custom cookie");
-//		response.addCookie(c);
+		// Cookie c = new Cookie("c" + request.getCookies().length, "custom cookie");
+		// response.addCookie(c);
 
 		writer.close();
 	}

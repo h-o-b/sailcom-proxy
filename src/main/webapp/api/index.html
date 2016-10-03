@@ -187,20 +187,31 @@
 						<td colspan="2"><h2>Misc</h2></td>
 					</tr>
 					<tr>
-						<td>General</td>
+						<td>http</td>
 						<td>
 							<a href="#" ng-click="execRequest('somewhere')">404</a>
+							<a href="#" ng-click="execRequest('test/http?a=b&c=d')">http</a>
 						</td>
 					</tr>
+					<tr>
+						<td>CDI</td>
+						<td>
+							<a href="#" ng-click="execRequest('test/cdi')">CDI</a>
+							<a href="#" ng-click="beginCdiConversation()" ng-show="!cid">Begin Conversation</a>
+							<a href="#" ng-click="endCdiConversation()" ng-show="cid">End Conversation</a>
+						</td>
+					</tr>
+
 				</table>
 
 			</div>
 
 			<div id="result" class="col-xs-8">
-				<h3 id="url">{{httpInfo.url}}</h3>
-				<pre id="resultCode">{{httpInfo.resultCode}}</pre>
-				<pre id="resultText">{{httpInfo.resultText}}</pre>
-				<iframe id="resultHtml" src="about:blank" frameBorder="0" width="100%" height="600px">
+				<h3>{{httpInfo.url}}</h3>
+				<pre>{{cid}}</pre>
+				<pre>{{httpInfo.resultCode}}</pre>
+				<pre>{{httpInfo.resultText}}</pre>
+				<iframe src="about:blank" frameBorder="0" width="100%" height="600px">
 					{{httpInfo.resultHtml}}
 				</iframe>
 			</div>

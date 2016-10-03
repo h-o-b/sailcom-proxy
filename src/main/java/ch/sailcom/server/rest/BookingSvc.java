@@ -31,7 +31,7 @@ import ch.sailcom.server.service.StaticDataService;
 @Authenticated
 public class BookingSvc {
 
-	private DateFormat df = new SimpleDateFormat("dd.MM.yyyy");
+	private static final DateFormat df = new SimpleDateFormat("dd.MM.yyyy");
 
 	@Inject
 	StaticDataService staticDataService;

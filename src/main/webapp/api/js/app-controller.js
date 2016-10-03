@@ -19,6 +19,8 @@ function AppController($scope, $rootScope, $http) {
 		alert(msg);
 	};
 
+	$scope.cid = "";
+
 	$scope.httpInfo = {
 		isActive: false,
 		url: "",
@@ -29,7 +31,6 @@ function AppController($scope, $rootScope, $http) {
 
 	$scope.startAjax = function(url) {
 		$scope.httpInfo.isActive = true;
-//		jQuery("#spinner").show();
 		$scope.httpInfo.url = url;
 		$scope.httpInfo.resultCode = "";
 		$scope.httpInfo.resultText = "";
@@ -38,7 +39,6 @@ function AppController($scope, $rootScope, $http) {
 
 	$scope.stopAjax = function(code, isHtml, text) {
 		$scope.httpInfo.isActive = false;
-//		jQuery("#spinner").hide();
 		$scope.httpInfo.resultCode = code;
 		if (isHtml) {
 			$scope.httpInfo.resultHtml = text;
@@ -48,13 +48,11 @@ function AppController($scope, $rootScope, $http) {
 	};
 
 	$scope.execRequest = function(url, f) {
+		if ($scope.cid) {
+			url += (url.indexOf("?") >= 0 ? "&" : "?") + "cid=" + encodeURIComponent($scope.cid);
+		}
 		$scope.startAjax(url);
 		var api = "/sailcom-proxy/" + url;
-/*
-		if ($scope.sessionInfo.session) {
-			api += (api.indexOf("?") >= 0 ? "&" : "?") + "session=" + encodeURIComponent($scope.sessionInfo.session);
-		}
-*/
 		$http.get(api).then(function(rsp) {
 			$scope.stopAjax(rsp.status + " (" + rsp.statusText + ")", /*isHtml*/ false, JSON.stringify(rsp.data, undefined, 2));
 			f && f(rsp);
@@ -69,6 +67,18 @@ function AppController($scope, $rootScope, $http) {
 
 	$scope.logout = function() {
 		$scope.execRequest("session/logout");
+	};
+
+	$scope.beginCdiConversation = function() {
+		$scope.execRequest("test/cdi/beginConversation", function(rsp) {
+			$scope.cid = rsp.data.cid;
+		});
+	};
+
+	$scope.endCdiConversation = function() {
+		$scope.execRequest("test/cdi/endConversation", function(rsp) {
+			$scope.cid = "";
+		});
 	};
 
 }

@@ -5,68 +5,59 @@ import static org.junit.Assert.assertNotNull;
 
 import java.util.List;
 
-import javax.ws.rs.core.Application;
-
-import org.junit.Before;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import ch.sailcom.server.model.Harbor;
 import ch.sailcom.server.model.Lake;
 import ch.sailcom.server.model.Ship;
+import ch.sailcom.server.proxy.StaticDataProxy;
+import ch.sailcom.server.proxy.impl.StaticDataProxyImpl;
 import ch.sailcom.server.rest.dto.SessionInfo;
-import ch.sailcom.server.rest.util.SailcomTest;
-import ch.sailcom.server.rest.util.TestAppBase;
+import ch.sailcom.server.rest.util.ProxyTest;
 
-public class StaticDataTest extends SailcomTest {
+public class StaticDataProxyTest extends ProxyTest {
 
-	class SessionTestApp extends TestAppBase {
-		SessionTestApp() {
-			register(SessionSvc.class);
-			register(LakeSvc.class);
-			register(HarborSvc.class);
-			register(ShipSvc.class);
-		}
-	}
+	static StaticDataProxy staticDataProxy;
 
-	@Override
-	protected Application configure() {
-		return new SessionTestApp();
-	}
-
-	@Before
-	public void openSession() {
-		final SessionInfo sessionInfo = login();
+	@BeforeClass
+	public static void openSession() {
+		SessionInfo sessionInfo = login();
 		assertEquals("user id", "82219", sessionInfo.user.id);
 		assertEquals("user name", "Hannes Brunner", sessionInfo.user.name);
 	}
 
+	@AfterClass
+	public static void closeSession() {
+		logout();
+	}
+
 	@Test
-	@SuppressWarnings("unchecked")
 	public void testLakes() {
-		List<Lake> lakes = target("lakes").request().get(List.class);
+		staticDataProxy = new StaticDataProxyImpl();
+		List<Lake> lakes = staticDataProxy.getLakes();
 		assertEquals("17 lakes", 17, lakes.size());
-		Lake lake = target("lakes/2").request().get(Lake.class);
+		Lake lake = lakes.stream().filter(l -> l.id == 2).findFirst().get();
 		assertEquals("lake id", 2, lake.id);
 		assertNotNull("lake name", lake.name);
 	}
 
 	@Test
-	@SuppressWarnings("unchecked")
 	public void testHarbors() {
-		List<Harbor> harbors = target("harbors").request().get(List.class);
+		List<Harbor> harbors = staticDataProxy.getHarbors();
 		assertEquals("53 harbors", 53, harbors.size());
-		Harbor harbor = target("harbors/14").request().get(Harbor.class);
+		Harbor harbor = harbors.stream().filter(h -> h.id == 14).findFirst().get();
 		assertEquals("harbor id", 14, harbor.id);
 		assertEquals("harbor name", "La Neuveville", harbor.name);
 		assertNotNull("lake id", harbor.lakeId);
 	}
 
 	@Test
-	@SuppressWarnings("unchecked")
 	public void testShips() {
-		List<Ship> ships = target("ships").request().get(List.class);
+		List<Ship> ships = staticDataProxy.getShips();
 		assertEquals("99 ships", 99, ships.size());
-		Ship ship = target("ships/197").request().get(Ship.class);
+		Ship ship = ships.stream().filter(s -> s.id == 197).findFirst().get();
 		assertEquals("ship id", 197, ship.id);
 		assertEquals("ship name", "mOcean SUI 32", ship.name);
 		assertEquals("harbor id", 31, ship.harborId);
