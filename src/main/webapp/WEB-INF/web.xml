@@ -42,8 +42,11 @@
 	<!-- STATIC RESOURCES -->
 	<servlet-mapping>
 		<servlet-name>default</servlet-name>
+		<url-pattern>/index.html</url-pattern>
 		<url-pattern>/api/*</url-pattern>
 		<url-pattern>/ui/*</url-pattern>
+		<url-pattern>/uix/*</url-pattern>
+		<url-pattern>/angular-material/*</url-pattern>
 	</servlet-mapping>
 
 	<!-- JNDI Binding for Weld (available under java:comp/env/xyz) -->
