@@ -1,0 +1,337 @@
+<html lang="en" ng-app="StarterApp">
+
+<head>
+  <meta charset="utf-8">
+  <meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0' name='viewport' />
+  <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/angular_material/1.1.1/angular-material.min.css">
+  <link rel="stylesheet" href="./app.css">
+</head>
+
+<body layout="column" layout-fill ng-controller="AppCtrl" ng-cloak>
+
+  <!--div layout="column" flex class="relative" layout-fill role="main"-->
+  <div layout="column" flex role="main">
+
+    <md-toolbar layout="column" ng-show="!showSearch">
+
+      <div class="md-toolbar-tools" layout="row">
+        <md-button class="md-icon-button" aria-label="Menu" ng-click="toggleSidenav('left')"><!-- hide-gt-md -->
+          <ng-md-icon icon="menu"></ng-md-icon>
+        </md-button>
+        <h2><span>Swiss&nbsp;Boat&nbsp;Sharing</span></h2>
+        <span flex></span>
+        <!--md-button aria-label="Search" ng-click="showSearch = !showSearch">
+          <ng-md-icon icon="search"></ng-md-icon>
+        </md-button>
+        <md-button aria-label="Open Settings" ng-click="showListBottomSheet($event)">
+          <ng-md-icon icon="more_vert"></ng-md-icon>
+        </md-button-->
+      </div>
+
+    </md-toolbar>
+
+    <md-nav-bar md-selected-nav-item="currentTab" nav-bar-aria-label="Navigation Links">
+      <md-nav-item name="tab2" aria-controls="tab2-content">
+        My Trips
+      </md-nav-item>
+      <md-nav-item name="tab4" aria-controls="tab4-content">
+        Ships
+      </md-nav-item>
+      <md-nav-item name="tab3" aria-controls="tab3-content">
+        R.
+      </md-nav-item>
+      <!--md-nav-item name="tab1" aria-controls="tab1-content">
+        L.
+      </md-nav-item-->
+    </md-nav-bar>
+ 
+	  <md-button ng-if="currentTab=='tab2'" class="md-fab md-fab-bottom-right" aria-label="Add" ng-click="showAdd($event)">
+	    <ng-md-icon icon="add"></ng-md-icon>
+	  </md-button>
+
+    <md-content flex layout="column">
+
+	    <md-toolbar class="md-hue-1" ng-show="showSearch">
+	      <div class="md-toolbar-tools">
+	        <md-button ng-click="showSearch = !showSearch" aria-label="Back">
+	          <ng-md-icon icon="arrow_back"></ng-md-icon>
+	        </md-button>
+	        <h3 flex="10">
+	          Back
+	        </h3>
+	        <md-input-container md-theme="input" flex>
+	          <label>&nbsp;</label>
+	          <input ng-model="search.who" placeholder="enter search">
+	        </md-input-container>
+	        <md-button aria-label="Search" ng-click="showSearch = !showSearch">
+	          <ng-md-icon icon="search"></ng-md-icon>
+	        </md-button>
+	        <md-button aria-label="Open Settings" ng-click="showListBottomSheet($event)">
+	          <ng-md-icon icon="more_vert"></ng-md-icon>
+	        </md-button>
+	      </div>
+	    </md-toolbar>
+
+    <ng-switch on="currentTab" class="tabpanel-container">
+
+	    <div flex layout="column" layout-padding ng-switch-when="tab1" id="tab1-content" aria-labelledby="tab1" role="tabpanel">
+        <div layout="row" layout-align="space-around center">
+          <img src="http://sailcom.ch/images/grafik/sailcom.png" style="width: 40%; max-width: 191px; display: block; margin: auto"></img><!-- height: 65px;  -->
+          <img src="http://www.sailbox.ch/domains/sail-box_ch/data/free_docs/Logo%20Sailbox.png" style="width: 40%; max-width: 137px; display: block; margin: auto"></img><!-- height: 45px;  -->
+        </div>
+		    <div class="md-inline-form">
+		      <form name="loginForm" layout="column">
+	          <md-input-container>
+		          <trip-reservation></trip-reservation>
+	          </md-input-container>
+	          <md-input-container class="md-block" flex-gt-xs>
+	            <label>User Id</label>
+	            <input ng-model="user.userId">
+	          </md-input-container>
+	          <md-input-container>
+	            <label>Passwort</label>
+	            <input ng-model="user.pwd" type="password">
+	          </md-input-container>
+	          <md-input-container>
+					    <div layout="row">
+					      <md-button class="md-raised md-primary" flex="100">Login</md-button>
+				      </div>
+	          </md-input-container>
+		      </form>
+	      </div>
+	    </div>
+
+	    <div flex ng-switch-when="tab2" id="tab2-content" aria-labelledby="tab2" role="tabpanel">
+         <div layout="column" layout-padding>
+           <md-card ng-repeat="trip in trips">
+		        <md-card-title>
+		          <md-card-title-text>
+		            <span class="md-headline">{{trip.bookDay}} {{trip.bookDate}}</span>
+		            <span>{{trip.bookTimeFrom}} - {{trip.bookTimeTo}}</span>
+		            <span>{{trip.shipName}}</span>
+		            <span>{{trip.harborName}} - {{trip.lakeName}}</span>
+		          </md-card-title-text>
+               <md-card-avatar>
+                <ship-avatar></ship-avatar>
+		          </md-card-avatar>
+		        </md-card-title>
+				    <md-card-icon-actions layout="row">
+				      <md-button class="md-icon-button" aria-label="Details">
+			          <ng-md-icon icon="more_horiz"></ng-md-icon>
+				      </md-button>
+				    </md-card-icon-actions>
+		      </md-card>
+	      </div>
+	    </div>
+
+	    <div ng-switch-when="tab3" id="tab3-content" aria-labelledby="tab3" role="tabpanel">
+		    <div class="md-inline-form booking">
+		      <div layout="row" layout-align="center center">
+	          <div flex="20" layout="row" layout-align="center center">
+			      	<md-button class="md-fab md-mini"><ng-md-icon icon="chevron_left"></ng-md-icon></md-button>
+	          </div>
+	          <div flex="60" layout="row" layout-align="center center">
+	            <p>{{book.date}}</p>
+	          </div>
+	          <div flex="20" layout="row" layout-align="center center">
+			      	<md-button class="md-fab md-mini"><ng-md-icon icon="chevron_right"></ng-md-icon></md-button>
+	          </div>
+		      </div>
+		      <form name="loginForm" layout="column">
+	          <!--md-input-container>
+	            <label>Ship</label>
+	            <input ng-model="book.shipId">
+	          </md-input-container-->
+	          <md-input-container>
+		          <trip-reservation></trip-reservation>
+	          </md-input-container>
+		      </form>
+		      <form name="xForm" layout="row">
+	          <md-input-container flex="15">
+			      	<md-button class="md-fab md-mini">VM</md-button>
+	          </md-input-container>
+	          <md-input-container flex="15">
+			      	<md-button class="md-fab md-mini">NM</md-button>
+	          </md-input-container>
+	          <md-input-container flex="15">
+			      	<md-button class="md-fab md-mini">A</md-button>
+	          </md-input-container>
+	          <span flex="5"></span>
+	          <md-input-container flex="15">
+			      	<md-button class="md-fab md-mini">3h</md-button>
+	          </md-input-container>
+	          <md-input-container flex="15">
+			      	<md-button class="md-fab md-mini">6h</md-button>
+	          </md-input-container>
+	          <md-input-container flex="15">
+			      	<md-button class="md-fab md-mini">9h</md-button>
+	          </md-input-container>
+		      </form>
+		      <form name="xForm" layout="row">
+	          <md-input-container flex="20" layout="row" layout-align="center center">
+			      	<md-button class="md-fab md-mini"><ng-md-icon icon="chevron_left"></ng-md-icon></md-button>
+	          </md-input-container>
+	          <md-input-container flex="10">
+		          <div layout="row" flex>
+	              <input ng-model="book.startTime" disabled>
+		          </div>
+	          </md-input-container>
+	          <md-input-container flex="20" layout="row" layout-align="center center">
+			      	<md-button class="md-fab md-mini"><ng-md-icon icon="chevron_right"></ng-md-icon></md-button>
+	          </md-input-container>
+	          <md-input-container flex="20" layout="row" layout-align="center center">
+			      	<md-button class="md-fab md-mini"><ng-md-icon icon="remove"></ng-md-icon></md-button>
+	          </md-input-container>
+	          <md-input-container flex="10">
+		          <div layout="row" flex>
+	              <input ng-model="book.endTime" disabled>
+		          </div>
+	          </md-input-container>
+	          <md-input-container flex="20" layout="row" layout-align="center center">
+			      	<md-button class="md-fab md-mini"><ng-md-icon icon="add"></ng-md-icon></md-button>
+	          </md-input-container>
+		      </form>
+		      <form name="xForm" layout="row">
+	          <md-input-container>
+				      <md-button class="md-raised">Reset</md-button>
+	          </md-input-container>
+	          <md-input-container>
+				      <md-button class="md-raised md-primary">Prüfen</md-button>
+	          </md-input-container>
+		      </form>
+	      </div>
+	    </div>
+
+	    <div ng-switch-when="tab4" id="tab4-content" aria-labelledby="tab4" role="tabpanel">
+         <div flex layout="column" layout-fill layout-padding layout-align="center center">
+           <md-card flex-gt-sm="90" flex-gt-md="80">
+             <md-card-content>
+               <h2>Favorites</h2>
+               <md-list>
+                 <md-item ng-repeat="item in activity | filter:search | orderBy:'-what'">
+                   <md-item-content>
+                     <div class="md-tile-left inset" hide-sm>
+                       <user-avatar></user-avatar>
+                     </div>
+                     <div class="md-tile-content">
+                       <h3>{{item.what}}</h3>
+                       <h4>{{item.who}}</h4>
+                       <p>
+                         {{item.notes}}
+                       </p>
+                     </div>
+                   </md-item-content>
+                   <md-divider md-inset hide-sm ng-if="!$last"></md-divider>
+                   <md-divider hide-gt-sm ng-if="!$last"></md-divider>
+                 </md-item>
+                 <md-divider></md-divider>
+                 <md-item layout class="inset">
+                   <md-button layout layout-align="start center" class="md-primary">
+                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                       <path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z" />
+                     </svg> More
+                   </md-button>
+                 </md-item>
+               </md-list>
+             </md-card-content>
+           </md-card>
+	      </div>
+	    </div>
+
+          <!--div role="tabpanel" id="tab1-content" aria-labelledby="tab1" ng-switch-when="0" md-swipe-left="next()" md-swipe-right="previous()" layout="row" layout-align="center center">
+            <md-card flex-gt-sm="90" flex-gt-md="80">
+              <md-card-content>
+                <h2>Activity</h2>
+                <md-list>
+                  <md-item ng-repeat="item in activity | filter:search">
+                    <md-item-content>
+                      <div class="md-tile-left inset" hide-sm>
+                        <user-avatar></user-avatar>
+                      </div>
+                      <div class="md-tile-content">
+                        <h3>{{item.what}}</h3>
+                        <h4>{{item.who}}</h4>
+                        <p>
+                          {{item.notes}}
+                        </p>
+                      </div>
+                    </md-item-content>
+                    <md-divider md-inset hide-sm ng-if="!$last"></md-divider>
+                    <md-divider hide-gt-sm ng-if="!$last"></md-divider>
+                  </md-item>
+                  <md-divider></md-divider>
+                  <md-item layout class="inset">
+                    <md-button layout layout-align="start center" flex class="md-primary">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                        <path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z" />
+                      </svg> More
+                    </md-button>
+                  </md-item>
+                </md-list>
+              </md-card-content>
+            </md-card>
+          </div-->
+
+    </ng-switch>
+    </md-content>
+
+  </div>
+
+  <!--md-sidenav layout="column" class="md-sidenav-left md-whiteframe-z2" md-component-id="left" md-is-locked-open="$mdMedia('gt-md')">
+
+    <md-toolbar class="md-tall md-hue-2">
+      <span flex></span>
+      <div layout="column" class="md-toolbar-tools-bottom inset">
+        <user-avatar></user-avatar>
+        <span></span>
+        <div>Firstname Lastname</div>
+        <div>email@domainname.com</div>
+      </div>
+    </md-toolbar>
+
+    <md-list>
+
+      <md-item ng-repeat="item in menu">
+        <a>
+          <md-item-content md-ink-ripple layout="row" layout-align="start center">
+            <div class="inset">
+              <ng-md-icon icon="{{item.icon}}"></ng-md-icon>
+            </div>
+            <div class="inset">{{item.title}}
+            </div>
+          </md-item-content>
+        </a>
+      </md-item>
+
+      <md-divider></md-divider>
+
+      <md-subheader>Management</md-subheader>
+
+      <md-item ng-repeat="item in admin">
+        <a>
+          <md-item-content md-ink-ripple layout="row" layout-align="start center">
+            <div class="inset">
+              <ng-md-icon icon="{{item.icon}}"></ng-md-icon>
+            </div>
+            <div class="inset">{{item.title}}
+            </div>
+          </md-item-content>
+        </a>
+      </md-item>
+
+    </md-list>
+
+  </md-sidenav-->
+
+  <!-- Angular Material Dependencies -->
+  <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.3.6/angular.min.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.3.6/angular-animate.min.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.3.5/angular-aria.min.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/angular_material/1.1.1/angular-material.min.js"></script>
+  <script src="//cdn.jsdelivr.net/angular-material-icons/0.7.1/angular-material-icons.min.js"></script>
+  <!-- App -->
+  <script src="./app.js"></script>
+
+</body>
+
+</html>
