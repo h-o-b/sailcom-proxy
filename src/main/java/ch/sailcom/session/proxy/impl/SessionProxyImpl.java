@@ -8,9 +8,7 @@ import java.net.CookieManager;
 import java.net.CookieStore;
 import java.net.HttpCookie;
 import java.net.URL;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
@@ -48,7 +46,6 @@ public class SessionProxyImpl implements SessionProxy, Serializable {
 
 	private HttpCookie sessionCookie = null;
 	private User user = null;
-	private Map<Class<?>, Object> proxyMap = new HashMap<Class<?>, Object>();
 
 	@PostConstruct
 	void init() {
@@ -166,7 +163,7 @@ public class SessionProxyImpl implements SessionProxy, Serializable {
 				user.ip = user.ip.substring(user.ip.indexOf("(IP:"));
 				user.ip = user.ip.substring(4, user.ip.length() - 1);
 
-				LOGGER.info("login.5");
+				LOGGER.debug("login.5");
 				return true;
 
 			}
@@ -191,7 +188,6 @@ public class SessionProxyImpl implements SessionProxy, Serializable {
 	public void logout() {
 
 		this.user = null;
-		this.proxyMap.clear();
 
 		try {
 			URL loginPage = new URL(LOGOUT_PAGE_URL);

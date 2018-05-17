@@ -11,7 +11,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-import ch.sailcom.session.api.rest.Authenticated;
 import ch.sailcom.test.service.AppBean;
 import ch.sailcom.test.service.ConversationBean;
 import ch.sailcom.test.service.RequestBean;
@@ -21,7 +20,6 @@ import ch.sailcom.test.service.SessionBean;
  * Ship Service
  */
 @Path("/test/cdi")
-@Authenticated
 public class CdiSvc {
 
 	@Inject

@@ -20,7 +20,7 @@
 		</encoder>
 	</appender>
 
-	<logger name="ch.sailcom" level="INFO" />
+	<logger name="ch.sailcom" level="DEBUG" />
 
 	<root level="INFO">
 		<appender-ref ref="STDOUT" />
