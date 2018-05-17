@@ -6,64 +6,80 @@
 
 	<modelVersion>4.0.0</modelVersion>
 
-	<name>SailCom Server Proxy</name>
 	<groupId>ch.sailcom</groupId>
 	<artifactId>sailcom-proxy</artifactId>
-	<packaging>war</packaging>
+	<name>Sailcom Proxy Server</name>
 	<version>0.0.1-SNAPSHOT</version>
+	<packaging>jar</packaging>
+	<description>Embedded Tomcat server application that uses CDI (Weld) and exposes a REST (RestEasy) API</description>
 
 	<properties>
-		<gcr.project>gcr.io/ferrous-coda-145407</gcr.project>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<servlet.version>3.1.0</servlet.version>
-		<jersey.version>2.23.2</jersey.version>
-		<weld.version>2.4.0.Final</weld.version>
+		<tomcat.version>8.5.31</tomcat.version>
+		<tomcat.juli.version>8.5.2</tomcat.juli.version>
+		<weld.version>2.4.6.Final</weld.version>
+		<resteasy.version>3.5.1.Final</resteasy.version>
 		<jsoup.version>1.9.2</jsoup.version>
 		<mapdb.version>3.0.2</mapdb.version>
 		<slf4j.version>1.7.21</slf4j.version>
-		<log4j.version>1.2.17</log4j.version>
+		<logback.version>1.2.3</logback.version>
 		<junit.version>4.12</junit.version>
-		<docker.host>tcp://192.168.99.100:2376</docker.host>
-		<docker.certPath>C:\Users\Hannes\.docker\machine\machines\default</docker.certPath>
 	</properties>
 
 	<dependencies>
 
-		<!-- Servlet API -->
+		<!-- Tomcat -->
 		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>javax.servlet-api</artifactId>
-			<version>${servlet.version}</version>
-			<scope>provided</scope>
+			<groupId>org.apache.tomcat.embed</groupId>
+			<artifactId>tomcat-embed-core</artifactId>
+			<version>${tomcat.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.tomcat.embed</groupId>
+			<artifactId>tomcat-embed-jasper</artifactId>
+			<version>${tomcat.version}</version>
 		</dependency>
 
-		<!-- Jersey (JAX-RS) runtime -->
-		<dependency>
-			<groupId>org.glassfish.jersey.core</groupId>
-			<artifactId>jersey-server</artifactId>
-			<version>${jersey.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.glassfish.jersey.media</groupId>
-			<artifactId>jersey-media-json-jackson</artifactId>
-			<version>${jersey.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.glassfish.jersey.containers</groupId>
-			<artifactId>jersey-container-servlet-core</artifactId>
-			<version>${jersey.version}</version>
-		</dependency>
-
-		<!-- Weld CDI -->
+		<!-- Weld -->
 		<dependency>
 			<groupId>org.jboss.weld.servlet</groupId>
-			<artifactId>weld-servlet-core</artifactId>
+			<artifactId>weld-servlet</artifactId>
+			<version>${weld.version}</version>
+		</dependency>
+
+		<!-- If you want to initialize Weld in your main method you need these -->
+		<dependency>
+			<groupId>org.jboss.weld.se</groupId>
+			<artifactId>weld-se</artifactId>
 			<version>${weld.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.glassfish.jersey.ext.cdi</groupId>
-			<artifactId>jersey-cdi1x-servlet</artifactId>
-			<version>${jersey.version}</version>
+			<groupId>org.glassfish.web</groupId>
+			<artifactId>el-impl</artifactId>
+			<version>2.2</version>
+		</dependency>
+
+		<!-- RESTEasy -->
+		<dependency>
+			<groupId>org.jboss.resteasy</groupId>
+			<artifactId>resteasy-servlet-initializer</artifactId>
+			<version>${resteasy.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.jboss.resteasy</groupId>
+			<artifactId>resteasy-cdi</artifactId>
+			<version>${resteasy.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.jboss.resteasy</groupId>
+					<artifactId>resteasy-jaxrs</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.jboss.resteasy</groupId>
+			<artifactId>resteasy-jackson2-provider</artifactId>
+			<version>${resteasy.version}</version>
 		</dependency>
 
 		<!-- HTML parsing -->
@@ -82,11 +98,17 @@
 
 		<!-- Logging -->
 		<dependency>
-			<groupId>log4j</groupId>
-			<artifactId>log4j</artifactId>
-			<version>${log4j.version}</version>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>${slf4j.version}</version>
 		</dependency>
 		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-classic</artifactId>
+			<version>${logback.version}</version>
+		</dependency>
+
+		<!--dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
 			<version>${slf4j.version}</version>
@@ -96,6 +118,11 @@
 			<artifactId>slf4j-log4j12</artifactId>
 			<version>${slf4j.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+			<version>${log4j.version}</version>
+		</dependency-->
 
 		<!-- Testing -->
 		<dependency>
@@ -109,7 +136,7 @@
 
 	<build>
 
-		<finalName>sailcom-proxy</finalName>
+		<finalName>${project.artifactId}</finalName>
 
 		<plugins>
 
@@ -123,79 +150,31 @@
 				</configuration>
 			</plugin>
 
-			<!-- Copy Dockerfile to target -->
 			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-resources-plugin</artifactId>
-				<version>3.0.1</version>
-				<executions>
-					<execution>
-						<id>copy-resources</id>
-						<phase>validate</phase>
-						<goals>
-							<goal>copy-resources</goal>
-						</goals>
-						<configuration>
-							<outputDirectory>${project.basedir}/target</outputDirectory>
-							<resources>
-								<resource>
-									<directory>src/main/docker</directory>
-									<filtering>true</filtering>
-								</resource>
-							</resources>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-
-			<plugin>
-				<groupId>io.fabric8</groupId>
-				<artifactId>docker-maven-plugin</artifactId>
-				<version>0.16.5</version>
-				<extensions>true</extensions>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>appassembler-maven-plugin</artifactId>
+				<version>1.10</version>
 				<configuration>
-					<images>
-						<image>
-							<alias>proxy</alias>
-							<name>${gcr.project}/%a:%l</name>
-							<!--name>%g/%a:%l</name-->
-							<build>
-								<dockerFile>${project.basedir}/target/Dockerfile</dockerFile>
-							</build>
-							<!--run> 
-								<ports> 
-									<port>tomcat.port:8080</port>
-								</ports>
-								<wait> 
-									<http>
-										<url>http://localhost:${tomcat.port}/sailcom-proxy/api/index.html</url>
-									</http>
-									<time>10000</time>
-								</wait>
-								<links> 
-									<link>database:db</link>
-								</links>
-							</run-->
-						</image>
-						<!--image>
-							<alias>database</alias> 
-							<name>postgres:9</name>
-							<run>
-								<wait> 
-									<log>database system is ready to accept connections</log>
-									<time>20000</time>
-								</wait>
-							</run>
-						</image-->
-					</images>
+					<assembleDirectory>target</assembleDirectory>
+					<programs>
+						<program>
+							<mainClass>ch.sailcom.server.App</mainClass>
+							<jvmSettings>
+								<initialMemorySize>256m</initialMemorySize>
+								<maxMemorySize>1024m</maxMemorySize>
+								<extraArguments>
+									<extraArgument>-agentlib:jdwp=transport=dt_socket,address=8888,server=y,suspend=n</extraArgument>
+								</extraArguments>
+							</jvmSettings>
+							<name>webapp</name>
+						</program>
+					</programs>
 				</configuration>
-				<!-- Connect start/stop to pre- and post-integration-test phase, respectively if you want to start your docker containers during integration tests -->
 				<executions>
 					<execution>
-						<id>docker:build</id>
-						<phase>install</phase>
+						<phase>package</phase>
 						<goals>
-							<goal>build</goal>
+							<goal>assemble</goal>
 						</goals>
 					</execution>
 				</executions>

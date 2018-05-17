@@ -1,58 +1,16 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
 <web-app
-	version="3.0"
-	id="sailcom-proxy"
 	xmlns="http://java.sun.com/xml/ns/javaee"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_1.xsd"
+	version="3.1"
+	id="sailcom-proxy"
 >
 
-	<display-name>SailCom Proxy Server</display-name>
+	<display-name>Sailcom Proxy Server</display-name>
 
-	<welcome-file-list>
-		<welcome-file>index.html</welcome-file>
-	</welcome-file-list>
-
-	<error-page>  
-		<error-code>404</error-code>  
-		<location>/notfound.html</location>  
-	</error-page>
-
-	<!-- JERSEY SCANNING -->
-	<servlet>
-		<servlet-name>jersey</servlet-name>
-		<servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>
-		<init-param>
-			<param-name>javax.ws.rs.Application</param-name>
-			<param-value>ch.sailcom.server.rest.App</param-value>
-		</init-param>
-		<init-param>
-			<param-name>jersey.config.server.provider.packages</param-name>
-			<param-value>ch.sailcom.server.rest</param-value>
-		</init-param>
-		<load-on-startup>1</load-on-startup>
-	</servlet>
-
-	<servlet-mapping>
-		<servlet-name>jersey</servlet-name>
-		<url-pattern>/*</url-pattern>
-	</servlet-mapping>
-
-	<!-- STATIC RESOURCES -->
-	<servlet-mapping>
-		<servlet-name>default</servlet-name>
-		<url-pattern>/index.html</url-pattern>
-		<url-pattern>/api/*</url-pattern>
-		<url-pattern>/ui/*</url-pattern>
-		<url-pattern>/uix/*</url-pattern>
-		<url-pattern>/angular-material/*</url-pattern>
-	</servlet-mapping>
-
-	<!-- JNDI Binding for Weld (available under java:comp/env/xyz) -->
-	<resource-env-ref>
-		<resource-env-ref-name>BeanManager</resource-env-ref-name>
-		<resource-env-ref-type>javax.enterprise.inject.spi.BeanManager</resource-env-ref-type>
-	</resource-env-ref>
+	<context-param>
+		<param-name>resteasy.injector.factory</param-name>
+		<param-value>org.jboss.resteasy.cdi.CdiInjectorFactory</param-value>
+	</context-param>
 
 </web-app>
