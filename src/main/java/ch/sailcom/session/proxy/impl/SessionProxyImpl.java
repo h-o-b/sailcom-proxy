@@ -145,7 +145,9 @@ public class SessionProxyImpl implements SessionProxy, Serializable {
 				LOGGER.debug("login.3");
 				Document doc = Jsoup.connect(LOGIN_INFO_URL).get();
 
-				// <div id="login">&nbsp;<b>82219 - Hannes Brunner</b>&nbsp;&nbsp;&nbsp;(IP: 81.221.99.86)</div>
+				// <div id="login">
+				// &nbsp;<b>82219 - Hannes Brunner</b>&nbsp;&nbsp;&nbsp;(IP: 81.221.99.86)
+				// </div>
 				Element loginInfo = doc.getElementById("login");
 				if (loginInfo == null) {
 					return false;
