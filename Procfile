@@ -1,1 +1,1 @@
-web: java -jar target/sailcom-proxy.jar ch.sailcom.server.App
+web: java -cp ./target/classes:./target/dependency/* ch.sailcom.server.App

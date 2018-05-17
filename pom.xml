@@ -151,30 +151,15 @@
 			</plugin>
 
 			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>appassembler-maven-plugin</artifactId>
-				<version>1.10</version>
-				<configuration>
-					<assembleDirectory>target</assembleDirectory>
-					<programs>
-						<program>
-							<mainClass>ch.sailcom.server.App</mainClass>
-							<jvmSettings>
-								<initialMemorySize>256m</initialMemorySize>
-								<maxMemorySize>1024m</maxMemorySize>
-								<extraArguments>
-									<extraArgument>-agentlib:jdwp=transport=dt_socket,address=8888,server=y,suspend=n</extraArgument>
-								</extraArguments>
-							</jvmSettings>
-							<name>webapp</name>
-						</program>
-					</programs>
-				</configuration>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<version>3.0.1</version>
 				<executions>
 					<execution>
+						<id>copy-dependencies</id>
 						<phase>package</phase>
 						<goals>
-							<goal>assemble</goal>
+							<goal>copy-dependencies</goal>
 						</goals>
 					</execution>
 				</executions>

@@ -16,6 +16,9 @@ $RECYCLE.BIN/
 .project
 .settings/
 
+# VSCode
+.vscode
+
 # Maven
 log/
 target/
