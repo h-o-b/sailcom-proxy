@@ -1,22 +1,27 @@
 package ch.sailcom.session.proxy.impl;
 
-import java.io.File;
+import java.io.IOException;
 import java.io.Serializable;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.concurrent.ConcurrentMap;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
 
-import org.mapdb.DB;
-import org.mapdb.DBMaker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import ch.sailcom.session.domain.User;
 import ch.sailcom.session.domain.UserPref;
 import ch.sailcom.session.proxy.UserPrefProxy;
+import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisPool;
+import redis.clients.jedis.JedisPoolConfig;
 
 @SessionScoped
 public class UserPrefProxyImpl implements UserPrefProxy, Serializable {
@@ -25,56 +30,68 @@ public class UserPrefProxyImpl implements UserPrefProxy, Serializable {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(UserPrefProxyImpl.class);
 
-	// private static final String DB_FILE = "/volume1/@appstore/Tomcat7/src/webapps/sailcom-proxy/sailcom-proxy.db";
-	private static final String DB_FILE = "d:/data/sailcom/sailcom-proxy.db";
-	private static final String USER_INFO_MAP = "userInfoMap";
+	private static final String REDIS_URL = System.getenv("REDIS_URL");
+	private static JedisPool jedisPool;
+	private static ObjectMapper mapper = new ObjectMapper();
 
-	private static DB database;
-	private static ConcurrentMap<String, UserPref> userPrefMap;
+	private static JedisPool getPool() throws URISyntaxException {
+		URI redisURI = new URI(REDIS_URL);
+		JedisPoolConfig poolConfig = new JedisPoolConfig();
+		poolConfig.setMaxTotal(10);
+		poolConfig.setMaxIdle(5);
+		poolConfig.setMinIdle(1);
+		poolConfig.setTestOnBorrow(true);
+		poolConfig.setTestOnReturn(true);
+		poolConfig.setTestWhileIdle(true);
+		JedisPool pool = new JedisPool(poolConfig, redisURI);
+		return pool;
+	}
 
 	@PostConstruct
-	@SuppressWarnings("unchecked")
 	void init() {
-
-		if (database != null) {
+		if (jedisPool != null) {
 			return;
 		}
+		try {
+			jedisPool = getPool();
+		} catch (URISyntaxException e) {
+			throw new RuntimeException(e);
+		}
+	}
 
-		File dbFile = new File(DB_FILE);
-		LOGGER.debug("Opening database file {}", dbFile.getAbsolutePath());
-
-		database = DBMaker.fileDB(dbFile).transactionEnable().closeOnJvmShutdown().make();
-		LOGGER.debug("Opening database hashMap {}", USER_INFO_MAP);
-
-		userPrefMap = (ConcurrentMap<String, UserPref>) database.hashMap(USER_INFO_MAP).createOrOpen();
-		LOGGER.debug("Opening database done");
-
+	private String getRedisKey(User user) {
+		return "user:" + user.id + ":pref";
 	}
 
 	@Override
 	public synchronized UserPref getUserPref(User user) {
-
 		LOGGER.debug("getUserPref({})", user.id);
-		UserPref userPref = userPrefMap.get(user.id);
-
-		LOGGER.debug("getUserPref({}): {}", user.id, userPref);
-		if (userPref == null) {
-			userPref = new UserPref();
-			userPref.favoriteShips = new HashSet<Integer>();
-			userPref.ratedShips = new HashMap<Integer, Integer>();
+		try (Jedis jedis = jedisPool.getResource()) {
+			String userPrefJson = jedis.get(getRedisKey(user));
+			LOGGER.debug("getUserPref({}): {}", userPrefJson);
+			if (userPrefJson == null) {
+				UserPref userPref = new UserPref();
+				userPref.favoriteShips = new HashSet<Integer>();
+				userPref.ratedShips = new HashMap<Integer, Integer>();
+				userPrefJson = mapper.writeValueAsString(userPref);
+				jedis.set(getRedisKey(user), userPrefJson);
+			}
+			LOGGER.debug("getUserPref({}): {}", userPrefJson);
+			return mapper.readValue(userPrefJson, UserPref.class);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
 		}
-
-		LOGGER.debug("getUserPref({}): {}", user.id, userPref);
-		return userPref;
-
 	}
 
 	@Override
 	public void setUserPref(User user, UserPref userPref) {
 		LOGGER.debug("setUserPref({}, {})", user.id, userPref);
-		userPrefMap.put(user.id, userPref);
-		database.commit();
-		LOGGER.debug("setUserPref.done({}, {})", user.id, userPref);
+		try (Jedis jedis = jedisPool.getResource()) {
+			String userPrefJson = mapper.writeValueAsString(userPref);
+			jedis.set(getRedisKey(user), userPrefJson);
+		} catch (JsonProcessingException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 }
